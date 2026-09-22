@@ -17,6 +17,7 @@ import {
   deleteAdminBanner,
   deleteAdminCategory,
   deleteAdminProduct,
+  getAdminAnalytics,
   getAdminDashboard,
   listAdminBanners,
   listAdminCategories,
@@ -75,6 +76,13 @@ adminRouter.get(
   "/dashboard",
   route(async (_req, res) => {
     res.json(await getAdminDashboard());
+  }),
+);
+
+adminRouter.get(
+  "/analytics",
+  route(async (_req, res) => {
+    res.json(await getAdminAnalytics());
   }),
 );
 

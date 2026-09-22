@@ -8,6 +8,13 @@
       "when": 1790104364457,
       "tag": "0000_safe_pete_wisdom",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1790113135951,
+      "tag": "0001_opposite_omega_red",
+      "breakpoints": true
     }
   ]
 }

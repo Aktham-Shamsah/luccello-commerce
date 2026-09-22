@@ -15,6 +15,7 @@ import { listDatabaseCategories } from "./modules/categories/category.repository
 import { listEnabledBanners } from "./modules/banners/banner.repository.js";
 import { adminRouter } from "./modules/admin/admin.router.js";
 import { adminAuthMiddleware } from "./modules/admin/admin-auth.middleware.js";
+import { analyticsRouter } from "./modules/analytics/analytics.router.js";
 import { uploadDirectory } from "./modules/admin/upload.service.js";
 import { errorMiddleware, notFoundMiddleware } from "./middleware/error.middleware.js";
 import { idempotencyMiddleware } from "./middleware/idempotency.middleware.js";
@@ -93,6 +94,8 @@ app.get("/banners", rateLimit(rateLimits.catalogRead), async (_req, res) => {
 app.get("/inventory", rateLimit(rateLimits.catalogRead), (_req, res) => {
   res.json(inventorySnapshot());
 });
+
+app.use("/analytics", rateLimit(rateLimits.catalogRead), analyticsRouter);
 
 app.post(
   "/checkout",

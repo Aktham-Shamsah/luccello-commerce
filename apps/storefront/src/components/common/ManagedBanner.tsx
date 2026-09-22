@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SafeImage } from "@/components/common/SafeImage";
+import { recordAdvertisement } from "@/lib/analytics-client";
 
 type Banner = {
   id: string;
@@ -26,6 +27,7 @@ function getApiUrl() {
 
 export function ManagedBanner() {
   const [banner, setBanner] = useState<Banner | null>(null);
+  const impressionTracked = useRef<string | null>(null);
 
   useEffect(() => {
     const apiUrl = getApiUrl();
@@ -35,6 +37,12 @@ export function ManagedBanner() {
       .then((items: Banner[]) => setBanner(items.find((item) => item.enabled) ?? null))
       .catch(() => setBanner(null));
   }, []);
+
+  useEffect(() => {
+    if (!banner || impressionTracked.current === banner.id) return;
+    impressionTracked.current = banner.id;
+    void recordAdvertisement(banner.id, "impression");
+  }, [banner]);
 
   if (!banner) return null;
 
@@ -51,7 +59,11 @@ export function ManagedBanner() {
   return (
     <section className="managed-banner" aria-label={banner.title}>
       {banner.href ? (
-        <a href={banner.href} className="managed-banner__link">
+        <a
+          href={banner.href}
+          className="managed-banner__link"
+          onClick={() => void recordAdvertisement(banner.id, "click")}
+        >
           {content}
         </a>
       ) : (

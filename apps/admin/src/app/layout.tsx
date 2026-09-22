@@ -10,6 +10,9 @@ const links = [
   ["#products", "المنتجات والمخزون"],
   ["#categories", "الفئات"],
   ["#banners", "البانرات"],
+  ["#analytics", "التحليلات"],
+  ["#advertising-metrics", "مؤشرات الإعلانات"],
+  ["#user-activity", "نشاط المستخدمين"],
   ["#orders", "المشتريات"],
   ["#users", "المستخدمون"],
 ] as const;

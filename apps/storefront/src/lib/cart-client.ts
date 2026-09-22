@@ -1,3 +1,7 @@
+"use client";
+
+import { recordActivity } from "@/lib/analytics-client";
+
 export type StoredCartItem = {
   productId: string;
   quantity: number;
@@ -34,10 +38,12 @@ export function addToCart(productId: string, quantity = 1) {
   if (existing) existing.quantity = Math.min(20, existing.quantity + quantity);
   else items.push({ productId, quantity: Math.min(20, Math.max(1, quantity)) });
   saveCart(items);
+  void recordActivity("cart_add", window.location.pathname, productId);
 }
 
 export function removeFromCart(productId: string) {
   saveCart(readCart().filter((item) => item.productId !== productId));
+  void recordActivity("cart_remove", window.location.pathname, productId);
 }
 
 export function cartCount() {

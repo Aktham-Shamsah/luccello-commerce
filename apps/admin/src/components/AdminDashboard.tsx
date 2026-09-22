@@ -66,6 +66,30 @@ type UserRow = {
   createdAt: string;
 };
 
+type AdminAnalytics = {
+  periodDays: number;
+  sessions: { total: number; active24h: number };
+  activityByType: { type: string; count: number }[];
+  recentActivity: {
+    id: string;
+    type: string;
+    userId: string | null;
+    anonymousId: string | null;
+    payload: Record<string, unknown>;
+    createdAt: string;
+  }[];
+  advertisements: {
+    bannerId: string;
+    title: string;
+    impressions: number;
+    clicks: number;
+    conversions: number;
+    revenue: number;
+    clickThroughRate: number;
+    conversionRate: number;
+  }[];
+};
+
 type ProductForm = {
   id?: string;
   slug: string;
@@ -131,6 +155,7 @@ export function AdminDashboard() {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [users, setUsers] = useState<UserRow[]>([]);
+  const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
   const [productForm, setProductForm] = useState<ProductForm>(emptyProduct);
   const [categoryForm, setCategoryForm] = useState({ id: "", slug: "", nameAr: "", imageUrl: "" });
   const [bannerForm, setBannerForm] = useState({
@@ -146,21 +171,30 @@ export function AdminDashboard() {
   const load = useCallback(async () => {
     setError("");
     try {
-      const [dashboardData, productData, categoryData, bannerData, orderData, userData] =
-        await Promise.all([
-          adminFetch<Dashboard>("dashboard"),
-          adminFetch<ProductRow[]>("products"),
-          adminFetch<Category[]>("categories"),
-          adminFetch<Banner[]>("banners"),
-          adminFetch<OrderRow[]>("orders"),
-          adminFetch<UserRow[]>("users"),
-        ]);
+      const [
+        dashboardData,
+        productData,
+        categoryData,
+        bannerData,
+        orderData,
+        userData,
+        analyticsData,
+      ] = await Promise.all([
+        adminFetch<Dashboard>("dashboard"),
+        adminFetch<ProductRow[]>("products"),
+        adminFetch<Category[]>("categories"),
+        adminFetch<Banner[]>("banners"),
+        adminFetch<OrderRow[]>("orders"),
+        adminFetch<UserRow[]>("users"),
+        adminFetch<AdminAnalytics>("analytics"),
+      ]);
       setDashboard(dashboardData);
       setProducts(productData);
       setCategories(categoryData);
       setBanners(bannerData);
       setOrders(orderData);
       setUsers(userData);
+      setAnalytics(analyticsData);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : "تعذر تحميل لوحة الإدارة");
     }
@@ -703,6 +737,95 @@ export function AdminDashboard() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="admin-section" id="analytics">
+        <div className="section-heading">
+          <div>
+            <h3>نشاط المستخدمين والتحليلات</h3>
+            <p>ملخص الجلسات والنشاط المصرّح به خلال آخر {analytics?.periodDays ?? 7} أيام.</p>
+          </div>
+        </div>
+        <div className="grid analytics-summary-grid">
+          <article className="card">
+            <span>إجمالي الجلسات</span>
+            <strong>{analytics?.sessions.total ?? 0}</strong>
+          </article>
+          <article className="card">
+            <span>نشطة آخر 24 ساعة</span>
+            <strong>{analytics?.sessions.active24h ?? 0}</strong>
+          </article>
+          {(analytics?.activityByType ?? []).map((item) => (
+            <article className="card" key={item.type}>
+              <span>{item.type}</span>
+              <strong>{item.count}</strong>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="table-wrap" id="advertising-metrics">
+        <div className="section-heading">
+          <div>
+            <h3>مؤشرات الإعلانات</h3>
+            <p>الظهور والنقر والتحويل والعائد لكل بانر.</p>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>البانر</th>
+              <th>الظهور</th>
+              <th>النقرات</th>
+              <th>CTR</th>
+              <th>التحويلات</th>
+              <th>معدل التحويل</th>
+              <th>العائد</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(analytics?.advertisements ?? []).map((metric) => (
+              <tr key={metric.bannerId}>
+                <td>{metric.title}</td>
+                <td>{metric.impressions}</td>
+                <td>{metric.clicks}</td>
+                <td>{metric.clickThroughRate.toFixed(1)}%</td>
+                <td>{metric.conversions}</td>
+                <td>{metric.conversionRate.toFixed(1)}%</td>
+                <td>{metric.revenue.toLocaleString("ar")} شيكل</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      <section className="table-wrap" id="user-activity">
+        <div className="section-heading">
+          <div>
+            <h3>أحدث نشاط المستخدمين</h3>
+            <p>يُسجل فقط بعد قبول ملفات التحليلات.</p>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>الحدث</th>
+              <th>المستخدم / الجلسة</th>
+              <th>المسار</th>
+              <th>التاريخ</th>
+            </tr>
+          </thead>
+          <tbody>
+            {(analytics?.recentActivity ?? []).map((event) => (
+              <tr key={event.id}>
+                <td>{event.type}</td>
+                <td>{event.userId?.slice(0, 8) ?? event.anonymousId?.slice(0, 8) ?? "—"}</td>
+                <td>{String(event.payload.path ?? event.payload.bannerId ?? "—")}</td>
+                <td>{new Date(event.createdAt).toLocaleString("ar")}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </section>
 
       <section className="table-wrap" id="orders">

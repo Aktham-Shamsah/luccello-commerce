@@ -1,5 +1,7 @@
-import { desc, eq, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, gte, isNull, sql } from "drizzle-orm";
 import {
+  advertisementMetrics,
+  analyticsEvents,
   banners,
   categories,
   inventory,
@@ -7,6 +9,7 @@ import {
   productCategories,
   productImages,
   products,
+  userSessions,
   users,
 } from "@luccello/database";
 import { getDatabase } from "../../shared/database/client.js";
@@ -274,5 +277,67 @@ export async function getAdminDashboard() {
     lowStock: lowStock[0]?.count ?? 0,
     revenue: Number(revenue[0]?.total ?? 0),
     currency: "ILS",
+  };
+}
+
+export async function getAdminAnalytics() {
+  const since = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+  const activeSince = new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const database = db();
+  const [sessionTotal, activeSessions, activityByType, recentActivity, ads] = await Promise.all([
+    database
+      .select({ count: sql<number>`count(*)::int` })
+      .from(userSessions)
+      .where(isNull(userSessions.revokedAt)),
+    database
+      .select({ count: sql<number>`count(*)::int` })
+      .from(userSessions)
+      .where(and(isNull(userSessions.revokedAt), gte(userSessions.lastSeenAt, activeSince))),
+    database
+      .select({ type: analyticsEvents.type, count: sql<number>`count(*)::int` })
+      .from(analyticsEvents)
+      .where(gte(analyticsEvents.createdAt, since))
+      .groupBy(analyticsEvents.type),
+    database
+      .select({
+        id: analyticsEvents.id,
+        type: analyticsEvents.type,
+        userId: analyticsEvents.userId,
+        anonymousId: analyticsEvents.anonymousId,
+        payload: analyticsEvents.payload,
+        createdAt: analyticsEvents.createdAt,
+      })
+      .from(analyticsEvents)
+      .orderBy(desc(analyticsEvents.createdAt))
+      .limit(25),
+    database
+      .select({
+        bannerId: advertisementMetrics.bannerId,
+        title: banners.title,
+        impressions: sql<number>`coalesce(sum(${advertisementMetrics.impressions}), 0)::int`,
+        clicks: sql<number>`coalesce(sum(${advertisementMetrics.clicks}), 0)::int`,
+        conversions: sql<number>`coalesce(sum(${advertisementMetrics.conversions}), 0)::int`,
+        revenue: sql<string>`coalesce(sum(${advertisementMetrics.revenue}), 0)`,
+      })
+      .from(advertisementMetrics)
+      .innerJoin(banners, eq(banners.id, advertisementMetrics.bannerId))
+      .where(gte(advertisementMetrics.day, since))
+      .groupBy(advertisementMetrics.bannerId, banners.title),
+  ]);
+
+  return {
+    periodDays: 7,
+    sessions: {
+      total: sessionTotal[0]?.count ?? 0,
+      active24h: activeSessions[0]?.count ?? 0,
+    },
+    activityByType,
+    recentActivity,
+    advertisements: ads.map((row) => ({
+      ...row,
+      revenue: Number(row.revenue),
+      clickThroughRate: row.impressions ? (row.clicks / row.impressions) * 100 : 0,
+      conversionRate: row.clicks ? (row.conversions / row.clicks) * 100 : 0,
+    })),
   };
 }

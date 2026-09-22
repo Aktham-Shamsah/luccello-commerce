@@ -385,14 +385,52 @@ export const storeSettings = pgTable("store_settings", {
   ...timestamps,
 });
 
+export const userSessions = pgTable(
+  "user_sessions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tokenHash: varchar("token_hash", { length: 64 }).notNull(),
+    anonymousId: uuid("anonymous_id").defaultRandom().notNull(),
+    userId: uuid("user_id").references(() => users.id),
+    analyticsConsent: boolean("analytics_consent").default(false).notNull(),
+    ipHash: varchar("ip_hash", { length: 64 }),
+    userAgentHash: varchar("user_agent_hash", { length: 64 }),
+    lastSeenAt: timestamp("last_seen_at", { withTimezone: true }).defaultNow().notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    revokedAt: timestamp("revoked_at", { withTimezone: true }),
+    ...timestamps,
+  },
+  (table) => ({ tokenIdx: uniqueIndex("user_sessions_token_hash_idx").on(table.tokenHash) }),
+);
+
 export const analyticsEvents = pgTable("analytics_events", {
   id: uuid("id").primaryKey().defaultRandom(),
   type: text("type").notNull(),
   anonymousId: text("anonymous_id"),
   userId: uuid("user_id").references(() => users.id),
+  sessionId: uuid("session_id").references(() => userSessions.id),
   payload: jsonb("payload").notNull(),
   ...timestamps,
 });
+
+export const advertisementMetrics = pgTable(
+  "advertisement_metrics",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    bannerId: uuid("banner_id")
+      .references(() => banners.id, { onDelete: "cascade" })
+      .notNull(),
+    day: timestamp("day", { withTimezone: true }).notNull(),
+    impressions: integer("impressions").default(0).notNull(),
+    clicks: integer("clicks").default(0).notNull(),
+    conversions: integer("conversions").default(0).notNull(),
+    revenue: numeric("revenue", { precision: 12, scale: 2 }).default("0").notNull(),
+    ...timestamps,
+  },
+  (table) => ({
+    bannerDayIdx: uniqueIndex("advertisement_metrics_banner_day_idx").on(table.bannerId, table.day),
+  }),
+);
 
 export const dailyStoreMetrics = pgTable("daily_store_metrics", {
   day: timestamp("day", { withTimezone: true }).primaryKey(),

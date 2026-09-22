@@ -51,7 +51,7 @@ export function Header() {
           <span>القائمة</span>
         </button>
         <Link href="/ar" className="brand" aria-label="LU'CHÉLO">
-          <img src={publicPath("/luchelo-logo.webp")} alt="LU'CHÉLO" />
+          <img src={publicPath("/luchelo-mark.png")} alt="LU'CHÉLO" />
         </Link>
         <nav className="desktop-nav" aria-label="التنقل الرئيسي">
           {nav.map((item) => (
@@ -78,22 +78,35 @@ export function Header() {
         </div>
       </div>
       {open ? (
-        <div className="mobile-panel" role="dialog" aria-modal="true" aria-label="القائمة">
-          <h2>القائمة</h2>
+        <>
           <button
-            className="icon-btn"
+            className="mobile-panel-backdrop"
             type="button"
+            aria-label="إغلاق القائمة"
             onClick={() => setOpen(false)}
-            aria-label="إغلاق"
-          >
-            <X size={24} />
-          </button>
-          {nav.map((item) => (
-            <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>
-              {item.label}
-            </Link>
-          ))}
-        </div>
+          />
+          <div className="mobile-panel" role="dialog" aria-modal="true" aria-label="القائمة">
+            <div className="mobile-panel__head">
+              <img src={publicPath("/luchelo-mark.png")} alt="" />
+              <button
+                className="icon-btn"
+                type="button"
+                onClick={() => setOpen(false)}
+                aria-label="إغلاق"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <h2>القائمة</h2>
+            <nav className="mobile-panel__links" aria-label="روابط القائمة">
+              {nav.map((item) => (
+                <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        </>
       ) : null}
     </header>
   );
