@@ -8,16 +8,16 @@ Confirm the commit being published:
 git rev-parse HEAD
 ```
 
-Recommended public destination:
+Create a destination repository in your GitHub account or organization, then use its HTTPS URL:
 
 ```text
-https://github.com/AdhamEwaida/luccello-commerce.git
+https://github.com/YOUR_ACCOUNT/luccello-commerce.git
 ```
 
 Publish from the repository root:
 
 ```powershell
-.\scripts\publish-github.ps1 -RepositoryUrl "https://github.com/AdhamEwaida/luccello-commerce.git"
+.\scripts\publish-github.ps1 -RepositoryUrl "https://github.com/YOUR_ACCOUNT/luccello-commerce.git"
 ```
 
 If GitHub prompts for authentication, use a GitHub account or token with push access to the destination repository. AWS deployment remains intentionally out of scope until the explicit command `DEPLOY TO AWS` is given.
