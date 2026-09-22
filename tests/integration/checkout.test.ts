@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { checkoutSchema } from "@luccello/contracts";
+import { checkoutSchema } from "../../packages/contracts/src/index.js";
 
 describe("checkout contract", () => {
   it("rejects browser supplied payment success", () => {

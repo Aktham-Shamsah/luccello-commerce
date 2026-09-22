@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export { rateLimits, type RateLimitPolicy } from "./rate-limits.js";
+
 export const appConfigSchema = z.object({
   appEnv: z.enum(["local", "dev", "staging", "production"]).default("local"),
   awsRegion: z.string().default("me-south-1"),

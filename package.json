@@ -17,7 +17,7 @@
     "build": "turbo build",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
-    "test": "turbo test",
+    "test": "turbo test && vitest run tests/integration tests/security",
     "test:e2e": "playwright test",
     "format": "prettier --check .",
     "format:write": "prettier --write .",
