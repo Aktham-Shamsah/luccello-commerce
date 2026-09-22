@@ -1,3 +1,5 @@
+export const dynamic = "force-static";
+
 export function GET() {
   return Response.json({
     version: process.env.VERSION ?? "0.1.0-local-ready",

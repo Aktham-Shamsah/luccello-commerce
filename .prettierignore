@@ -1,15 +1,10 @@
 node_modules
 .next
+out
 dist
 cdk.out
 coverage
 .turbo
 .runlogs
-.env
-.env.*
-!.env.example
 playwright-report
 test-results
-*.log
-*.tsbuildinfo
-out

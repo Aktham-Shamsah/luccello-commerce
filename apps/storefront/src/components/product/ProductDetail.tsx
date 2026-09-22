@@ -8,6 +8,7 @@ import { formatSar } from "@luccello/ui";
 import { discountPercent, stockState } from "@/lib/pricing";
 import { products } from "@/lib/catalog";
 import { ProductCard } from "@/components/catalog/ProductCard";
+import { publicPath } from "@/lib/public-path";
 
 export function ProductDetail({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
@@ -24,7 +25,7 @@ export function ProductDetail({ product }: { product: Product }) {
           <img src={product.images[0]} alt={product.nameAr} />
           <div className="thumbs">
             <img src={product.images[0]} alt="" />
-            <img src="/hero-campaign.png" alt="" />
+            <img src={publicPath("/hero-campaign.png")} alt="" />
           </div>
         </div>
         <div className="product-info">

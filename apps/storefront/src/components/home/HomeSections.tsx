@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { categories, products, testimonials } from "@/lib/catalog";
 import { ProductCard } from "@/components/catalog/ProductCard";
+import { publicPath } from "@/lib/public-path";
 
 export function HeroSlider() {
   return (
     <section className="hero">
-      <img src="/hero-campaign.png" alt="حقيبة فاخرة ضمن حملة موسمية" />
+      <img src={publicPath("/hero-campaign.png")} alt="حقيبة فاخرة ضمن حملة موسمية" />
       <div className="hero-copy animate-reveal">
         <p>عزنا بكرمنا</p>
         <h1>لأنك تستحقين الأفضل</h1>
@@ -20,7 +21,7 @@ export function HeroSlider() {
 export function CampaignBanner() {
   return (
     <section className="container campaign">
-      <img src="/hero-campaign.png" alt="عرض موسمي على الحقائب" />
+      <img src={publicPath("/hero-campaign.png")} alt="عرض موسمي على الحقائب" />
       <div>
         <span>لفترة محدودة</span>
         <h2>الأكثر مبيعا بـ 196 ريال</h2>

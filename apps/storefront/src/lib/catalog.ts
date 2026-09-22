@@ -1,4 +1,5 @@
 import type { Category, Product } from "@luccello/types";
+import { publicPath } from "./public-path";
 
 export const categories: Category[] = [
   {
@@ -7,7 +8,7 @@ export const categories: Category[] = [
     nameAr: "جميع المنتجات",
     nameEn: "All Products",
     descriptionAr: "اختيارات يومية وعملية بتفاصيل أنيقة.",
-    image: "/product-collage.png",
+    image: publicPath("/product-collage.png"),
   },
   {
     id: "handbags",
@@ -15,7 +16,7 @@ export const categories: Category[] = [
     nameAr: "شنط يد",
     nameEn: "Handbags",
     descriptionAr: "قطع صغيرة راقية للمناسبات واليوميات.",
-    image: "/product-collage.png",
+    image: publicPath("/product-collage.png"),
   },
   {
     id: "crossbody",
@@ -23,7 +24,7 @@ export const categories: Category[] = [
     nameAr: "شنط كروس بودي",
     nameEn: "CrossBody Bag",
     descriptionAr: "حرية حركة مع تنظيم عملي.",
-    image: "/product-collage.png",
+    image: publicPath("/product-collage.png"),
   },
   {
     id: "tote",
@@ -31,7 +32,7 @@ export const categories: Category[] = [
     nameAr: "شنط جامعية",
     nameEn: "Tote Bags",
     descriptionAr: "مساحة واسعة للعمل والدراسة.",
-    image: "/product-collage.png",
+    image: publicPath("/product-collage.png"),
   },
   {
     id: "shoulder",
@@ -39,7 +40,7 @@ export const categories: Category[] = [
     nameAr: "شنط كتف",
     nameEn: "Shoulder Bags",
     descriptionAr: "تصاميم أنيقة بخيارات ألوان هادئة.",
-    image: "/product-collage.png",
+    image: publicPath("/product-collage.png"),
   },
 ];
 
@@ -48,13 +49,13 @@ const baseProduct = {
   descriptionAr:
     "حقيبة مصممة لليوم الطويل: وزن خفيف، جلد نباتي ناعم، ومساحة تكفي الأساسيات بدون تضخم.",
   currency: "SAR",
-  images: ["/product-collage.png"],
+  images: [publicPath("/product-collage.png")],
   material: "جلد نباتي مبطن",
   dimensions: "28 x 20 x 10 سم",
   lowStockThreshold: 4,
   published: true,
   notes: "تصل داخل كيس حفظ قطني.",
-  attachments: [{ label: "دليل العناية", url: "/care-guide.pdf" }],
+  attachments: [{ label: "دليل العناية", url: publicPath("/care-guide.pdf") }],
   seoTitle: "حقيبة نسائية أنيقة",
   seoDescription: "حقيبة نسائية أصلية بتصميم عملي وخامة فاخرة.",
 } satisfies Omit<
