@@ -17,7 +17,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm --filter @luccello/storefront dev",
+    command: "corepack pnpm --filter @luccello/storefront dev",
     url: "http://localhost:3000/ar",
     reuseExistingServer: true,
     timeout: 120_000,

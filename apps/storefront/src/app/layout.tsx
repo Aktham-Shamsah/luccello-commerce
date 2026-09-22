@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: "L'uccello Demo Store",
-  description: "Arabic RTL ecommerce platform demo with original assets.",
+  title: "LU'CHÉLO | حقائب نسائية",
+  description: "متجر LU'CHÉLO للحقائب بتجربة عربية RTL وأسعار وعروض واضحة.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

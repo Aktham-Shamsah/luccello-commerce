@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { Instagram, Mail, MessageCircle, Phone } from "lucide-react";
+import { MessageCircle, Phone } from "lucide-react";
+
+const SUPPORT_NUMBER = "966509827383";
 
 export function Footer() {
   return (
@@ -13,31 +15,20 @@ export function Footer() {
           <Link href="/ar/terms">الشروط والأحكام</Link>
         </section>
         <section className="footer-about">
-          <h3>L&apos;uccello</h3>
-          <p>
-            متجر تجريبي مستقل يقدم تجربة عربية RTL مستوحاة من بنية متجر حقائب حديث، مع أصول ومحتوى
-            خياليين غير مرتبطين بالعلامة المرجعية.
-          </p>
+          <h3>LU&apos;CHÉLO</h3>
+          <p>حقائب مختارة بتصميم أنيق وتجربة تسوق عربية سهلة وسريعة على الجوال والكمبيوتر.</p>
         </section>
         <section>
-          <h3>معلومات المتجر</h3>
-          <a href="https://wa.me/966500000000">
+          <h3>تواصل معنا</h3>
+          <a href={`https://wa.me/${SUPPORT_NUMBER}`} target="_blank" rel="noreferrer">
             <MessageCircle size={18} /> واتساب
           </a>
-          <a href="tel:+966500000000">
-            <Phone size={18} /> الجوال
-          </a>
-          <a href="mailto:hello@example.test">
-            <Mail size={18} /> البريد الإلكتروني
-          </a>
-          <a href="https://instagram.com" rel="noreferrer">
-            <Instagram size={18} /> انستغرام
+          <a href={`tel:+${SUPPORT_NUMBER}`}>
+            <Phone size={18} /> +{SUPPORT_NUMBER}
           </a>
         </section>
       </div>
-      <div className="footer-bottom">
-        2026 منصة تجريبية مفتوحة المصدر. لا تستخدم بيانات إنتاجية.
-      </div>
+      <div className="footer-bottom">© 2026 LU&apos;CHÉLO</div>
     </footer>
   );
 }

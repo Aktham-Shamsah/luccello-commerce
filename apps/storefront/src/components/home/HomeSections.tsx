@@ -138,3 +138,33 @@ export function NewsletterSection() {
     </section>
   );
 }
+
+export function CategoryShowcaseSections() {
+  return (
+    <div className="category-showcases">
+      {categories.slice(1).map((category) => {
+        const categoryProducts = products
+          .filter((product) => product.categories.includes(category.slug))
+          .slice(0, 4);
+
+        return (
+          <section className="container section category-showcase" key={category.id}>
+            <Link className="category-wide-banner" href={`/ar/category/${category.slug}`}>
+              <img src={category.image} alt={category.nameAr} />
+              <div>
+                <span>{category.nameEn}</span>
+                <h2>{category.nameAr}</h2>
+                <strong>عرض الكل</strong>
+              </div>
+            </Link>
+            <div className="product-grid category-product-grid">
+              {categoryProducts.map((product) => (
+                <ProductCard product={product} key={product.id} />
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  );
+}

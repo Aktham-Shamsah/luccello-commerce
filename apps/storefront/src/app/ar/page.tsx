@@ -1,6 +1,7 @@
 import {
   CampaignBanner,
   CategoryNavigation,
+  CategoryShowcaseSections,
   FeaturedCollection,
   HeroSlider,
   NewestProducts,
@@ -14,6 +15,7 @@ export default function HomePage() {
       <HeroSlider />
       <CampaignBanner />
       <CategoryNavigation />
+      <CategoryShowcaseSections />
       <FeaturedCollection />
       <NewestProducts />
       <TestimonialCarousel />

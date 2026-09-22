@@ -5,6 +5,7 @@ import { Heart, ShoppingBag } from "lucide-react";
 import type { Product } from "@luccello/types";
 import { formatSar } from "@luccello/ui";
 import { discountPercent, stockState } from "@/lib/pricing";
+import { addToCart } from "@/lib/cart-client";
 
 export function ProductCard({ product }: { product: Product }) {
   const state = stockState(product);
@@ -23,11 +24,20 @@ export function ProductCard({ product }: { product: Product }) {
           <h3>{product.nameAr}</h3>
         </Link>
         <p>{product.color}</p>
+        <div className="product-rating" aria-label="تقييم 4.9 من 5">
+          <span>★★★★★</span>
+          <small>4.9 (27)</small>
+        </div>
         <div className="price-row">
           <strong>{formatSar(product.salePrice)}</strong>
           {product.sale ? <del>{formatSar(product.regularPrice)}</del> : null}
         </div>
-        <button className="btn btn-primary" disabled={state === "out_of_stock"} type="button">
+        <button
+          className="btn btn-primary"
+          disabled={state === "out_of_stock"}
+          type="button"
+          onClick={() => addToCart(product.id)}
+        >
           <ShoppingBag size={18} />
           {state === "out_of_stock" ? "نفدت الكمية" : "أضف إلى السلة"}
         </button>
