@@ -104,26 +104,26 @@ export function ProductDetail({ product }: { product: Product }) {
           <div className="review-card">
             <div>
               <span>★★★★★</span>
-              <strong>نموذج مراجعة</strong>
+              <strong>مراجعة تجريبية</strong>
             </div>
             <p>الخامة جميلة والحجم عملي، والتغليف وصل مرتب جداً. اللون مطابق للصور.</p>
-            <small>محتوى تجريبي</small>
+            <small>بيانات العرض · 5/5</small>
           </div>
           <div className="review-card">
             <div>
               <span>★★★★★</span>
-              <strong>نموذج مراجعة</strong>
+              <strong>مراجعة تجريبية</strong>
             </div>
-            <p>استخدمتها للدوام وأعجبني تقسيمها الداخلي وخفة وزنها.</p>
-            <small>محتوى تجريبي</small>
+            <p>استخدمتها للدوام وأعجبني تقسيمها الداخلي وخفة وزنها وسهولة حملها.</p>
+            <small>بيانات العرض · 5/5</small>
           </div>
           <div className="review-card">
             <div>
               <span>★★★★☆</span>
-              <strong>نموذج مراجعة</strong>
+              <strong>مراجعة تجريبية</strong>
             </div>
-            <p>المقاس واضح والسعر ظاهر قبل الإضافة للسلة، والتجربة سهلة على الجوال.</p>
-            <small>محتوى تجريبي</small>
+            <p>المقاس واضح والسعر ظاهر قبل الإضافة للسلة، والتجربة سهلة جداً على الجوال.</p>
+            <small>بيانات العرض · 4/5</small>
           </div>
         </div>
       </section>

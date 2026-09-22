@@ -23,24 +23,28 @@ export function Header() {
   }, []);
 
   const nav = [
+    { href: "/ar", label: "الرئيسية" },
     { href: "/ar/products", label: "جميع المنتجات" },
-    { href: "/ar/offers", label: "تخفيضات" },
+    { href: "/ar/latest", label: "أحدث المنتجات" },
+    { href: "/ar/offers", label: "التخفيضات" },
     ...categories.slice(1).map((category) => ({
       href: `/ar/category/${category.slug}`,
       label: category.nameEn,
     })),
+    { href: "/ar/testimonials", label: "آراء العملاء" },
   ];
 
   return (
     <header className="site-header">
       <div className="container header-inner">
         <button
-          className="icon-btn menu-btn"
+          className="menu-trigger"
           type="button"
           onClick={() => setOpen(true)}
-          aria-label="القائمة"
+          aria-label="فتح القائمة"
         >
-          <Menu size={24} />
+          <Menu size={22} />
+          <span>القائمة</span>
         </button>
         <Link href="/ar" className="brand" aria-label="LU'CHÉLO">
           <img src={publicPath("/luchelo-logo.webp")} alt="LU'CHÉLO" />
