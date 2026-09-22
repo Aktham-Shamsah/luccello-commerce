@@ -2,7 +2,7 @@ export type ShippingQuote = {
   provider: "mock";
   serviceLevel: "standard" | "express";
   amount: number;
-  currency: "SAR";
+  currency: "ILS";
   etaDays: number;
 };
 
@@ -23,10 +23,10 @@ export class MockShippingProvider implements ShippingProvider {
         provider: "mock",
         serviceLevel: "standard",
         amount: input.subtotal >= 196 ? 0 : 30,
-        currency: "SAR",
+        currency: "ILS",
         etaDays: 3,
       },
-      { provider: "mock", serviceLevel: "express", amount: 45, currency: "SAR", etaDays: 1 },
+      { provider: "mock", serviceLevel: "express", amount: 45, currency: "ILS", etaDays: 1 },
     ];
   }
 

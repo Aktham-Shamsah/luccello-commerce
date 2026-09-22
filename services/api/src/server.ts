@@ -7,6 +7,15 @@ import { logger } from "@luccello/logging";
 import { checkout } from "./modules/checkout/checkout.service.js";
 import { inventorySnapshot } from "./modules/inventory/inventory.service.js";
 import { productService } from "./modules/products/product.service.js";
+import {
+  findPublishedDatabaseProductBySlug,
+  listPublishedDatabaseProducts,
+} from "./modules/products/database-product.repository.js";
+import { listDatabaseCategories } from "./modules/categories/category.repository.js";
+import { listEnabledBanners } from "./modules/banners/banner.repository.js";
+import { adminRouter } from "./modules/admin/admin.router.js";
+import { adminAuthMiddleware } from "./modules/admin/admin-auth.middleware.js";
+import { uploadDirectory } from "./modules/admin/upload.service.js";
 import { errorMiddleware, notFoundMiddleware } from "./middleware/error.middleware.js";
 import { idempotencyMiddleware } from "./middleware/idempotency.middleware.js";
 import { loggingMiddleware } from "./middleware/logging.middleware.js";
@@ -29,18 +38,24 @@ app.use(requestIdMiddleware);
 app.use(loggingMiddleware);
 app.use(helmet());
 app.use(cors({ origin: allowedOrigins, credentials: true }));
-app.use(express.json({ limit: "128kb" }));
+app.use("/uploads", express.static(uploadDirectory, { maxAge: "1d", immutable: false }));
+app.use(express.json({ limit: "7mb" }));
 app.use(securityMiddleware);
 
 app.get("/version", (_req, res) => {
   res.json({ version: config.version, gitSha: config.gitSha, environment: config.appEnv });
 });
 
-app.get("/products", rateLimit(rateLimits.catalogRead), (_req, res) => {
-  res.json(productService.listPublished());
+app.get("/products", rateLimit(rateLimits.catalogRead), async (_req, res) => {
+  try {
+    const databaseProducts = await listPublishedDatabaseProducts();
+    res.json(databaseProducts.length ? databaseProducts : productService.listPublished());
+  } catch {
+    res.json(productService.listPublished());
+  }
 });
 
-app.get("/products/:slug", rateLimit(rateLimits.catalogRead), (req, res) => {
+app.get("/products/:slug", rateLimit(rateLimits.catalogRead), async (req, res) => {
   const parsedSlug = productSlugSchema.safeParse(req.params.slug);
   if (!parsedSlug.success) {
     res.status(400).json({ error: "validation_error", requestId: res.locals.requestId });
@@ -48,9 +63,30 @@ app.get("/products/:slug", rateLimit(rateLimits.catalogRead), (req, res) => {
   }
 
   try {
-    res.json(productService.getBySlug(parsedSlug.data));
+    const databaseProduct = await findPublishedDatabaseProductBySlug(parsedSlug.data);
+    res.json(databaseProduct ?? productService.getBySlug(parsedSlug.data));
   } catch {
-    res.status(404).json({ error: "product_not_found", requestId: res.locals.requestId });
+    try {
+      res.json(productService.getBySlug(parsedSlug.data));
+    } catch {
+      res.status(404).json({ error: "product_not_found", requestId: res.locals.requestId });
+    }
+  }
+});
+
+app.get("/categories", rateLimit(rateLimits.catalogRead), async (_req, res) => {
+  try {
+    res.json(await listDatabaseCategories());
+  } catch {
+    res.json([]);
+  }
+});
+
+app.get("/banners", rateLimit(rateLimits.catalogRead), async (_req, res) => {
+  try {
+    res.json(await listEnabledBanners());
+  } catch {
+    res.json([]);
   }
 });
 
@@ -76,9 +112,7 @@ app.post(
   },
 );
 
-app.use("/admin", rateLimit(rateLimits.adminLogin), (_req, res) => {
-  res.status(401).json({ error: "admin_auth_required", requestId: res.locals.requestId });
-});
+app.use("/admin", rateLimit(rateLimits.adminLogin), adminAuthMiddleware, adminRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

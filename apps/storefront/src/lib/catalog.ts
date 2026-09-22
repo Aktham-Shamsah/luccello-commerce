@@ -48,7 +48,7 @@ const baseProduct = {
   shortDescriptionAr: "حقيبة يومية بتقسيم داخلي عملي وسحاب آمن.",
   descriptionAr:
     "حقيبة مصممة لليوم الطويل: وزن خفيف، جلد نباتي ناعم، ومساحة تكفي الأساسيات بدون تضخم.",
-  currency: "SAR",
+  currency: "ILS",
   images: [publicPath("/product-collage.png")],
   material: "جلد نباتي مبطن",
   dimensions: "28 x 20 x 10 سم",

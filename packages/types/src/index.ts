@@ -1,4 +1,4 @@
-export type Currency = "SAR";
+export type Currency = "ILS";
 
 export type StockState = "in_stock" | "low_stock" | "out_of_stock";
 

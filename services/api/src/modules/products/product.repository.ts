@@ -11,7 +11,7 @@ export const products: Product[] = [
     descriptionAr: "منتج تجريبي بخامة جلد نباتي ومقاسات عملية.",
     salePrice: 196,
     regularPrice: 320,
-    currency: "SAR",
+    currency: "ILS",
     categories: ["handbags"],
     images: ["/product-collage.png"],
     color: "عاجي",

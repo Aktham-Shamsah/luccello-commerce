@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { MessageCircle, Phone } from "lucide-react";
-
-const SUPPORT_NUMBER = "966509827383";
+import { MessageCircle } from "lucide-react";
 
 export function Footer() {
   return (
@@ -20,12 +18,10 @@ export function Footer() {
         </section>
         <section>
           <h3>تواصل معنا</h3>
-          <a href={`https://wa.me/${SUPPORT_NUMBER}`} target="_blank" rel="noreferrer">
+          <a href="#" aria-disabled="true">
             <MessageCircle size={18} /> واتساب
           </a>
-          <a href={`tel:+${SUPPORT_NUMBER}`}>
-            <Phone size={18} /> +{SUPPORT_NUMBER}
-          </a>
+          <span className="muted">رقم الدعم سيضاف لاحقاً</span>
         </section>
       </div>
       <div className="footer-bottom">© 2026 LU&apos;CHÉLO</div>

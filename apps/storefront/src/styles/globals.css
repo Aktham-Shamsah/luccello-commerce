@@ -921,49 +921,48 @@ textarea {
   color: var(--color-primary);
 }
 
-.promo-banner {
-  position: relative;
-  min-height: 320px;
+.managed-banner {
+  width: 100%;
   overflow: hidden;
   background: #050505;
 }
 
-.promo-banner > img {
+.managed-banner__link,
+.managed-banner__content {
+  display: block;
+  position: relative;
+  min-height: clamp(220px, 34vw, 420px);
+}
+
+.managed-banner__content > img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.48;
 }
 
-.promo-banner__overlay {
+.managed-banner__overlay {
   position: relative;
   z-index: 1;
-  min-height: 320px;
+  min-height: clamp(220px, 34vw, 420px);
   display: grid;
   place-content: center;
   justify-items: center;
-  gap: var(--space-2);
-  padding: var(--space-8) 20px;
+  gap: var(--space-3);
+  padding: clamp(24px, 6vw, 72px);
+  background: linear-gradient(90deg, rgb(0 0 0 / 70%), rgb(0 0 0 / 18%), rgb(0 0 0 / 70%));
   color: white;
   text-align: center;
-  background: linear-gradient(90deg, rgb(0 0 0 / 72%), rgb(0 0 0 / 18%), rgb(0 0 0 / 72%));
 }
 
-.promo-banner__overlay h2 {
+.managed-banner__overlay h2 {
   margin: 0;
-  font-size: clamp(2rem, 5vw, 4.6rem);
+  font-size: clamp(1.8rem, 5vw, 4.4rem);
 }
 
-.promo-banner__overlay p {
-  margin: 0 0 var(--space-3);
-}
-
-.promo-banner__cta {
-  border-color: #d6a347;
-  background: #d6a347;
-  color: #050505;
+.managed-banner__overlay span {
+  border-bottom: 1px solid currentColor;
   font-weight: 700;
 }
 
@@ -1159,13 +1158,14 @@ textarea {
     height: 54px;
   }
 
-  .promo-banner,
-  .promo-banner__overlay {
-    min-height: 240px;
+  .managed-banner__link,
+  .managed-banner__content,
+  .managed-banner__overlay {
+    min-height: 210px;
   }
 
-  .promo-banner__overlay h2 {
-    font-size: 2.1rem;
+  .managed-banner__overlay h2 {
+    font-size: clamp(1.7rem, 8vw, 2.4rem);
   }
 }
 
@@ -1198,5 +1198,132 @@ textarea {
 
   .whatsapp span {
     display: none;
+  }
+}
+
+/* Fine-grained responsive safeguards */
+@media (max-width: 560px) {
+  .container {
+    width: min(100% - 20px, var(--container));
+  }
+
+  .header-inner {
+    gap: 8px;
+  }
+
+  .menu-trigger {
+    padding-inline: 0.65rem;
+  }
+
+  .menu-trigger span {
+    display: none;
+  }
+
+  .header-actions {
+    gap: 0;
+  }
+
+  .category-grid,
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-detail {
+    gap: var(--space-6);
+    padding-block: var(--space-6);
+  }
+}
+
+@media (max-width: 390px) {
+  .brand {
+    width: 78px;
+    height: 48px;
+  }
+
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .hero {
+    min-height: 500px;
+  }
+
+  .hero-copy h1 {
+    font-size: 2.2rem;
+  }
+
+  .managed-banner__link,
+  .managed-banner__content,
+  .managed-banner__overlay,
+  .category-wide-banner,
+  .category-wide-banner > div {
+    min-height: 190px;
+  }
+
+  .cart-item {
+    grid-template-columns: 82px 1fr;
+  }
+
+  .cart-item img {
+    width: 82px;
+  }
+}
+
+.dynamic-category-hero {
+  position: relative;
+  min-height: clamp(220px, 36vw, 420px);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  margin-bottom: var(--space-8);
+  border-radius: var(--radius-md);
+  background: #111;
+  color: white;
+}
+
+.dynamic-category-hero > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.44);
+}
+
+.dynamic-category-hero > div {
+  position: relative;
+  z-index: 1;
+  padding: 24px;
+  text-align: center;
+}
+
+/* Responsive hardening for arbitrary viewport widths */
+main,
+section,
+article,
+.product-info,
+.gallery,
+.cart-item-content {
+  min-width: 0;
+}
+
+.product-content h3,
+.page-head h1,
+.product-info h1 {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 880px) {
+  .header-inner {
+    flex-wrap: nowrap;
+  }
+
+  .desktop-nav {
+    display: none;
+  }
+
+  .menu-trigger {
+    flex: 0 0 auto;
   }
 }

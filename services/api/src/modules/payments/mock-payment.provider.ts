@@ -6,7 +6,7 @@ export class MockPaymentProvider implements PaymentProvider {
   async createPayment(input: {
     orderId: string;
     amount: number;
-    currency: "SAR";
+    currency: "ILS";
   }): Promise<PaymentIntent> {
     const payment: PaymentIntent = {
       id: `pay_${input.orderId}`,

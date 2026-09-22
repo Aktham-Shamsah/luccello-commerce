@@ -9,6 +9,13 @@
     "node": ">=22.0.0",
     "pnpm": ">=9.0.0"
   },
+  "pnpm": {
+    "overrides": {
+      "esbuild": "^0.25.12",
+      "postcss": "^8.5.23",
+      "sharp": "^0.35.4"
+    }
+  },
   "scripts": {
     "dev": "turbo dev",
     "dev:storefront": "pnpm --filter @luccello/storefront dev",

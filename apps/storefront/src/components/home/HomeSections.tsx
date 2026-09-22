@@ -1,12 +1,17 @@
+"use client";
+
 import Link from "next/link";
-import { categories, products, testimonials } from "@/lib/catalog";
+import { testimonials } from "@/lib/catalog";
+import { useCatalogData } from "@/lib/catalog-client";
+import { categoryHref } from "@/lib/catalog-links";
 import { ProductCard } from "@/components/catalog/ProductCard";
+import { SafeImage } from "@/components/common/SafeImage";
 import { publicPath } from "@/lib/public-path";
 
 export function HeroSlider() {
   return (
     <section className="hero">
-      <img src={publicPath("/hero-campaign.png")} alt="حقيبة فاخرة ضمن حملة موسمية" />
+      <SafeImage src={publicPath("/hero-campaign.png")} alt="حقيبة فاخرة ضمن حملة موسمية" />
       <div className="hero-copy animate-reveal">
         <p>عزنا بكرمنا</p>
         <h1>لأنك تستحقين الأفضل</h1>
@@ -21,10 +26,10 @@ export function HeroSlider() {
 export function CampaignBanner() {
   return (
     <section className="container campaign">
-      <img src={publicPath("/hero-campaign.png")} alt="عرض موسمي على الحقائب" />
+      <SafeImage src={publicPath("/hero-campaign.png")} alt="عرض موسمي على الحقائب" />
       <div>
         <span>لفترة محدودة</span>
-        <h2>الأكثر مبيعا بـ 196 ريال</h2>
+        <h2>الأكثر مبيعا بـ 196 شيكل</h2>
         <Link className="btn btn-outline" href="/ar/offers">
           اطلبي الآن
         </Link>
@@ -34,15 +39,17 @@ export function CampaignBanner() {
 }
 
 export function CategoryNavigation() {
+  const { categories } = useCatalogData();
+  const visibleCategories = categories.filter((category) => category.slug !== "all");
   return (
     <section className="container section">
       <div className="section-title">
         <h2>تسوقي حسب الفئة</h2>
       </div>
       <div className="category-grid">
-        {categories.slice(1).map((category) => (
-          <Link className="category-card" href={`/ar/category/${category.slug}`} key={category.id}>
-            <img src={category.image} alt="" />
+        {visibleCategories.map((category) => (
+          <Link className="category-card" href={categoryHref(category.slug)} key={category.id}>
+            <SafeImage src={category.image} alt="" />
             <h3>{category.nameAr}</h3>
             <p>{category.nameEn}</p>
           </Link>
@@ -53,6 +60,7 @@ export function CategoryNavigation() {
 }
 
 export function FeaturedCollection() {
+  const { products } = useCatalogData();
   return (
     <section className="container section">
       <div className="section-title">
@@ -74,6 +82,7 @@ export function FeaturedCollection() {
 }
 
 export function NewestProducts() {
+  const { products } = useCatalogData();
   return (
     <section className="section panel-band">
       <div className="container">
@@ -140,17 +149,19 @@ export function NewsletterSection() {
 }
 
 export function CategoryShowcaseSections() {
+  const { categories, products } = useCatalogData();
+  const visibleCategories = categories.filter((category) => category.slug !== "all");
   return (
     <div className="category-showcases">
-      {categories.slice(1).map((category) => {
+      {visibleCategories.map((category) => {
         const categoryProducts = products
           .filter((product) => product.categories.includes(category.slug))
           .slice(0, 4);
 
         return (
           <section className="container section category-showcase" key={category.id}>
-            <Link className="category-wide-banner" href={`/ar/category/${category.slug}`}>
-              <img src={category.image} alt={category.nameAr} />
+            <Link className="category-wide-banner" href={categoryHref(category.slug)}>
+              <SafeImage src={category.image} alt={category.nameAr} />
               <div>
                 <span>{category.nameEn}</span>
                 <h2>{category.nameAr}</h2>

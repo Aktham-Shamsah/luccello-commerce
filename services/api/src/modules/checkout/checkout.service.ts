@@ -27,7 +27,7 @@ export async function checkout(input: CheckoutRequest) {
   const payment = await paymentProvider.createPayment({
     orderId,
     amount: totals.total,
-    currency: "SAR",
+    currency: "ILS",
   });
   const result = {
     orderId,

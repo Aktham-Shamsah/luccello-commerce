@@ -1,23 +1,30 @@
 import "./../styles/globals.css";
 
 export const metadata = {
-  title: "Luccello Admin",
+  title: "LU'CHÉLO Admin",
   robots: "noindex,nofollow",
 };
 
-const links = ["Dashboard", "Products", "Inventory", "Orders", "Metrics", "Security"];
+const links = [
+  ["#dashboard", "الرئيسية"],
+  ["#products", "المنتجات والمخزون"],
+  ["#categories", "الفئات"],
+  ["#banners", "البانرات"],
+  ["#orders", "المشتريات"],
+  ["#users", "المستخدمون"],
+] as const;
 
 export default function AdminLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="ar" dir="rtl">
       <body>
         <div className="shell">
           <aside className="sidebar">
-            <h1>L&apos;uccello Admin</h1>
+            <h1>LU&apos;CHÉLO إدارة</h1>
             <nav>
-              {links.map((link) => (
-                <a key={link} href="#">
-                  {link}
+              {links.map(([href, label]) => (
+                <a key={href} href={href}>
+                  {label}
                 </a>
               ))}
             </nav>

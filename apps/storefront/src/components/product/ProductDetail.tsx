@@ -6,27 +6,28 @@ import Link from "next/link";
 import type { Product } from "@luccello/types";
 import { formatSar } from "@luccello/ui";
 import { discountPercent, stockState } from "@/lib/pricing";
-import { products } from "@/lib/catalog";
+import { useCatalogData } from "@/lib/catalog-client";
 import { ProductCard } from "@/components/catalog/ProductCard";
-import { publicPath } from "@/lib/public-path";
 import { addToCart } from "@/lib/cart-client";
+import { SafeImage } from "@/components/common/SafeImage";
 
 export function ProductDetail({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
+  const { products } = useCatalogData();
   const state = stockState(product);
   const related = useMemo(
     () => products.filter((item) => item.id !== product.id).slice(0, 4),
-    [product.id],
+    [product.id, products],
   );
 
   return (
     <>
       <section className="container product-detail">
         <div className="gallery">
-          <img src={product.images[0]} alt={product.nameAr} />
+          <SafeImage src={product.images[0]} alt={product.nameAr} />
           <div className="thumbs">
-            <img src={product.images[0]} alt="" />
-            <img src={publicPath("/hero-campaign.png")} alt="" />
+            <SafeImage src={product.images[0]} alt="" />
+            <SafeImage src={product.images[1]} alt="" />
           </div>
         </div>
         <div className="product-info">

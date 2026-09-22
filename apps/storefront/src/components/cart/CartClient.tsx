@@ -4,12 +4,15 @@ import Link from "next/link";
 import { Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { formatSar } from "@luccello/ui";
-import { products } from "@/lib/catalog";
+import { useCatalogData } from "@/lib/catalog-client";
+import { productHref } from "@/lib/catalog-links";
 import { computeTotals } from "@/lib/pricing";
 import { CART_EVENT, readCart, removeFromCart, type StoredCartItem } from "@/lib/cart-client";
+import { SafeImage } from "@/components/common/SafeImage";
 
 export function CartClient() {
   const [storedItems, setStoredItems] = useState<StoredCartItem[]>([]);
+  const { products } = useCatalogData();
 
   const refresh = () => setStoredItems(readCart());
 
@@ -65,9 +68,9 @@ export function CartClient() {
         <div className="cart-list">
           {items.map(({ product, quantity }) => (
             <article className="cart-item" key={product.id}>
-              <img src={product.images[0]} alt={product.nameAr} />
+              <SafeImage src={product.images[0]} alt={product.nameAr} />
               <div className="cart-item-content">
-                <Link href={`/ar/product/${product.slug}`}>
+                <Link href={productHref(product.slug)}>
                   <h2>{product.nameAr}</h2>
                 </Link>
                 <p>الكمية: {quantity}</p>

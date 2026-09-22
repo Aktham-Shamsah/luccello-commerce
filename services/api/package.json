@@ -16,6 +16,7 @@
   "dependencies": {
     "@luccello/config": "workspace:*",
     "@luccello/contracts": "workspace:*",
+    "@luccello/database": "workspace:*",
     "@luccello/logging": "workspace:*",
     "@luccello/types": "workspace:*",
     "cors": "^2.8.5",

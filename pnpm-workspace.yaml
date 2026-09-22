@@ -2,15 +2,12 @@ packages:
   - "apps/*"
   - "services/*"
   - "packages/*"
+  - "database"
   - "infrastructure/cdk"
 onlyBuiltDependencies:
   - esbuild
   - sharp
   - unrs-resolver
-overrides:
-  esbuild: ^0.25.12
-  postcss: ^8.5.23
-  sharp: ^0.35.4
 allowBuilds:
   esbuild: true
   sharp: true

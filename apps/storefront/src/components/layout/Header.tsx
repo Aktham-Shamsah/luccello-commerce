@@ -3,13 +3,15 @@
 import Link from "next/link";
 import { Menu, Search, ShoppingCart, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { categories } from "@/lib/catalog";
+import { useCatalogData } from "@/lib/catalog-client";
+import { categoryHref } from "@/lib/catalog-links";
 import { CART_EVENT, cartCount } from "@/lib/cart-client";
 import { publicPath } from "@/lib/public-path";
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [cartItems, setCartItems] = useState(0);
+  const { categories } = useCatalogData();
 
   useEffect(() => {
     const refresh = () => setCartItems(cartCount());
@@ -27,10 +29,12 @@ export function Header() {
     { href: "/ar/products", label: "جميع المنتجات" },
     { href: "/ar/latest", label: "أحدث المنتجات" },
     { href: "/ar/offers", label: "التخفيضات" },
-    ...categories.slice(1).map((category) => ({
-      href: `/ar/category/${category.slug}`,
-      label: category.nameEn,
-    })),
+    ...categories
+      .filter((category) => category.slug !== "all")
+      .map((category) => ({
+        href: categoryHref(category.slug),
+        label: category.nameAr,
+      })),
     { href: "/ar/testimonials", label: "آراء العملاء" },
   ];
 
