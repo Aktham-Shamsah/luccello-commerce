@@ -16,11 +16,14 @@ if ($status) {
   throw "Working tree is not clean. Commit or discard local changes before publishing."
 }
 
-$remote = git remote get-url origin 2>$null
-if ($LASTEXITCODE -ne 0) {
+$hasOrigin = (git remote) -contains "origin"
+if (-not $hasOrigin) {
   git remote add origin $RepositoryUrl
-} elseif ($remote -ne $RepositoryUrl) {
-  git remote set-url origin $RepositoryUrl
+} else {
+  $remote = git remote get-url origin
+  if ($remote -ne $RepositoryUrl) {
+    git remote set-url origin $RepositoryUrl
+  }
 }
 
 git branch -M $Branch
