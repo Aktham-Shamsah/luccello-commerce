@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "include": [
+    "bin/**/*.ts",
+    "lib/**/*.ts",
+    "constructs/**/*.ts",
+    "config/**/*.ts",
+    "tests/**/*.ts"
+  ],
+  "compilerOptions": {
+    "exactOptionalPropertyTypes": false,
+    "noEmit": true
+  }
+}

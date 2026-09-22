@@ -1,0 +1,45 @@
+{
+  "name": "luccello-commerce",
+  "version": "0.1.0-local-ready",
+  "private": true,
+  "description": "AWS-ready Arabic RTL ecommerce platform inspired by a public storefront reference, built with original assets and fictional data.",
+  "license": "MIT",
+  "packageManager": "pnpm@9.15.4",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:storefront": "pnpm --filter @luccello/storefront dev",
+    "dev:admin": "pnpm --filter @luccello/admin dev",
+    "dev:api": "pnpm --filter @luccello/api dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "test": "turbo test",
+    "test:e2e": "playwright test",
+    "format": "prettier --check .",
+    "format:write": "prettier --write .",
+    "db:generate": "pnpm --filter @luccello/api drizzle-kit generate",
+    "db:migrate": "pnpm --filter @luccello/api drizzle-kit migrate",
+    "db:seed": "tsx database/seeds/seed.ts",
+    "cdk:synth": "pnpm --filter @luccello/cdk synth",
+    "security:scan": "pnpm audit --audit-level moderate && node scripts/secret-scan.mjs",
+    "verify": "pnpm format && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm cdk:synth && pnpm security:scan"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.5",
+    "esbuild": "^0.28.2",
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.2",
+    "tsx": "^4.19.2",
+    "turbo": "^2.3.3",
+    "typescript-eslint": "^8.19.1",
+    "typescript": "^5.7.2",
+    "vite": "^7.2.7",
+    "vitest": "^4.1.11"
+  }
+}

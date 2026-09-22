@@ -1,0 +1,34 @@
+version: 1
+applications:
+  - appRoot: apps/storefront
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - corepack enable
+            - pnpm install --frozen-lockfile
+        build:
+          commands:
+            - pnpm --filter @luccello/storefront build
+      artifacts:
+        baseDirectory: .next
+        files:
+          - "**/*"
+      cache:
+        paths:
+          - ../../node_modules/**/*
+          - .next/cache/**/*
+  - appRoot: apps/admin
+    frontend:
+      phases:
+        preBuild:
+          commands:
+            - corepack enable
+            - pnpm install --frozen-lockfile
+        build:
+          commands:
+            - pnpm --filter @luccello/admin build
+      artifacts:
+        baseDirectory: .next
+        files:
+          - "**/*"

@@ -1,0 +1,8 @@
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] input,
+html[dir="rtl"] textarea {
+  text-align: right;
+}
