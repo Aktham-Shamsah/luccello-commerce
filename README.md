@@ -40,6 +40,10 @@ pnpm security:scan
 
 Screenshots are captured under `docs/screenshots/` during the final acceptance pass.
 
+## GitHub Publish
+
+This local repo is committed and ready to push after a GitHub repository is created. See `docs/github-publish.md` and `scripts/publish-github.ps1`.
+
 ## AWS Status
 
 AWS infrastructure is prepared as CDK, but AWS has not been deployed. Deployment should only happen after the exact command `DEPLOY TO AWS` and the checklist in `docs/deployment.md`.
