@@ -1,64 +1,40 @@
-# Architecture
+# Local Architecture
+
+The application uses regular Next.js/Node.js processes and PostgreSQL. Docker Compose coordinates the services on one Ubuntu host.
 
 ```mermaid
 flowchart LR
-  User["Customer Browser"] --> Storefront["Next.js Storefront"]
-  AdminUser["Admin Browser"] --> Admin["Next.js Admin"]
-  Storefront --> Api["API Gateway + Lambda"]
-  Admin --> Api
-  Api --> RdsProxy["RDS Proxy"]
-  RdsProxy --> Aurora["Aurora PostgreSQL Serverless v2"]
-  Api --> Dynamo["DynamoDB carts/rate counters"]
-  Api --> S3["S3 private assets"]
-  Api --> SQS["SQS background jobs"]
-  SQS --> Worker["Worker Lambda"]
-  Api --> SES["SES notifications"]
-  WAF["AWS WAF"] --> Storefront
-  WAF --> Api
+  Shopper["Customer browser"] --> Storefront["Next.js storefront :3000"]
+  Manager["Administrator browser"] --> Admin["Next.js admin :3001"]
+  Storefront -->|"internal /backend proxy"| API["Express API :4000"]
+  Admin -->|"authenticated server-side proxy"| API
+  API --> DB["PostgreSQL :5432"]
+  API --> Uploads["Persistent uploaded-image volume"]
+  GitHub["GitHub repository"] --> Actions["CI checks + optional static Pages preview"]
 ```
 
-## Request Lifecycle
+The API and PostgreSQL ports are private to the Docker network; only the storefront and admin HTTP ports are published. Restrict access to a trusted LAN until TLS is configured.
+
+## Checkout (current implementation)
 
 ```mermaid
 sequenceDiagram
-  participant B as Browser
-  participant N as Next.js
+  participant C as Customer browser
+  participant S as Storefront
   participant A as API
-  participant D as Database
-  B->>N: View product/category
-  N->>A: Fetch public catalog
-  A->>D: Query published products
-  D-->>A: Rows
-  A-->>N: Validated response
-  N-->>B: RTL page
+  participant D as PostgreSQL
+  C->>S: Submit cart and delivery details
+  S->>A: POST /checkout (cash on delivery)
+  A->>D: Begin transaction, lock inventory rows
+  A->>D: Validate product, quantity and authoritative prices
+  A->>D: Create order/items and decrement stock
+  D-->>A: Commit
+  A-->>S: Confirmed COD order ID
+  S-->>C: Order receipt and tracking link
 ```
 
-## Checkout Sequence
-
-```mermaid
-sequenceDiagram
-  participant B as Browser
-  participant A as API
-  participant DB as PostgreSQL
-  participant P as Payment Provider
-  B->>A: POST /checkout
-  A->>DB: begin + lock inventory
-  A->>DB: create reservation and pending order
-  A->>P: create payment
-  A-->>B: pending payment intent
-  P->>A: verified webhook
-  A->>DB: convert reservation into movement
-  A->>DB: confirm order
-```
+Cancellation from the admin panel restores the ordered inventory. Card payment providers and shipping carriers are not integrated.
 
 ## Deployment
 
-```mermaid
-flowchart TD
-  GitHub["GitHub main"] --> CI["GitHub Actions CI"]
-  CI --> Synth["CDK synth"]
-  Synth --> Deploy["Manual environment deployment"]
-  Deploy --> Stacks["CDK stacks"]
-  Stacks --> Amplify["Amplify Next.js apps"]
-  Stacks --> Api["API/Lambda/Data/Security"]
-```
+Use `compose.yaml` for the entire stack, or `docker-compose.yml` for a development-only PostgreSQL service while running Node.js processes on the host. See [Ubuntu deployment](ubuntu-docker.md).

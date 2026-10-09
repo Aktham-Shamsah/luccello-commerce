@@ -1,11 +1,11 @@
 # Metrics
 
-CloudWatch dashboards planned:
+Local monitoring and metrics:
 
 - API latency, 4xx, 5xx, throttles.
-- Lambda errors, duration, concurrency.
-- Aurora capacity, connections, CPU, storage.
-- SQS backlog and oldest message age.
+- API process errors, container restarts and resource consumption.
+- PostgreSQL connections, disk use, and backup freshness.
+- Failed checkouts, slow database queries and delivery-operation backlog.
 - Payment webhook failures.
-- WAF blocked requests and rate-limit spikes.
+- HTTP throttling responses and suspicious request volumes.
 - Business metrics: conversion, cart abandonment, revenue, product views.

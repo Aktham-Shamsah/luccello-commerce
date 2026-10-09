@@ -5,7 +5,7 @@ export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    ignores: ["node_modules/**", ".next/**", "dist/**", "cdk.out/**"],
+    ignores: ["node_modules/**", ".next/**", "dist/**"],
   },
   {
     files: ["**/*.{ts,tsx,mjs}"],

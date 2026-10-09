@@ -1,38 +1,40 @@
-# L'uccello Commerce Demo
+# L'uccello Commerce
 
-Production-oriented Arabic RTL ecommerce monorepo inspired by the public `luccello-bag.com` storefront structure. This repository uses original generated assets and fictional Arabic demo content. It is not affiliated with LUCCELLO.
+Arabic RTL ecommerce monorepo for a locally hosted handbag store. The repository uses original demo assets and sample Arabic content; it is not affiliated with the reference store.
 
 ## Stack
 
-Next.js 15, React, TypeScript, pnpm, Turborepo, Zod, Drizzle ORM, PostgreSQL, AWS CDK TypeScript, API Gateway/Lambda-ready API, Aurora PostgreSQL Serverless v2, RDS Proxy, DynamoDB extension point, S3, WAF, SQS, SES, CloudWatch, Vitest, Playwright, GitHub Actions.
+Next.js 15, React, TypeScript, Express, Zod, PostgreSQL, Drizzle ORM, pnpm, Turborepo, Docker Compose, Vitest, Playwright and GitHub Actions.
 
-## Apps
+The local Ubuntu server is the deployment target. GitHub Pages remains an **optional static storefront preview**, not a place to take orders.
 
-- Storefront: `apps/storefront`
-- Admin: `apps/admin`
-- API: `services/api`
-- CDK: `infrastructure/cdk`
+## Applications
 
-## Ubuntu Docker deployment
+- Customer storefront: `apps/storefront` (port 3000)
+- Password-protected administrator dashboard: `apps/admin` (port 3001)
+- Express API: `services/api` (private Docker network)
+- PostgreSQL database: `database` (private Docker network)
 
-For a local Ubuntu server, use [docs/ubuntu-docker.md](docs/ubuntu-docker.md):
+## Ubuntu deployment
+
+Follow [the Ubuntu Docker guide](docs/ubuntu-docker.md). The complete stack can be built and run without an external cloud provider.
 
 ```bash
 cp .env.docker.example .env
-# Replace all CHANGE_ME secrets in .env
+# Replace CHANGE_ME placeholders with independent strong secrets.
 docker compose up -d --build
+docker compose ps
 ```
 
-Storefront: port 3000. Password-protected admin: port 3001. The API and database are private to the Docker network. Orders use PostgreSQL-backed cash-on-delivery checkout, stock adjustments, order tracking, and admin fulfillment. Online payments, carrier integrations, and WhatsApp are not enabled.
+The storefront supports cash-on-delivery orders, inventory checks, order tracking and manual fulfillment; online card payment and carrier integrations are not configured. WhatsApp is intentionally left disabled.
 
-This remains a development implementation; the commercial policies, actual product media, real shipping conditions, customer accounts, and HTTPS must be configured and verified before public launch.
-
-## Local Setup
+## Develop on a computer
 
 ```bash
 corepack enable
 pnpm install
-docker compose -f docker-compose.yml up -d # development-only database services
+docker compose -f docker-compose.yml up -d
+# Copy .env.example to .env and replace secrets in the local development environment
 pnpm dev:api
 pnpm dev:storefront
 pnpm dev:admin
@@ -46,18 +48,9 @@ pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
-pnpm cdk:synth
 pnpm security:scan
 ```
 
-## Screenshots
+For container health checks and data backup/restore instructions, see [docs/deployment.md](docs/deployment.md) and [docs/backup-recovery.md](docs/backup-recovery.md).
 
-Screenshots are captured under `docs/screenshots/` during the final acceptance pass.
-
-## GitHub Publish
-
-This local repo is committed and ready to push after a GitHub repository is created. See `docs/github-publish.md` and `scripts/publish-github.ps1`.
-
-## AWS Status
-
-AWS infrastructure is prepared as CDK, but AWS has not been deployed. Deployment should only happen after the exact command `DEPLOY TO AWS` and the checklist in `docs/deployment.md`.
+This is still a development store; finish the real catalog, shipping policy, legal documents, HTTPS and end-to-end Docker/database testing before accepting actual orders.

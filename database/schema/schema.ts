@@ -36,14 +36,14 @@ export const users = pgTable(
   "users",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    cognitoSub: varchar("cognito_sub", { length: 160 }).notNull(),
+    authSubject: varchar("auth_subject", { length: 160 }).notNull(),
     email: varchar("email", { length: 254 }).notNull(),
     name: text("name").notNull(),
     ...timestamps,
   },
   (table) => ({
     emailIdx: uniqueIndex("users_email_idx").on(table.email),
-    subIdx: uniqueIndex("users_cognito_sub_idx").on(table.cognitoSub),
+    authSubjectIdx: uniqueIndex("users_auth_subject_idx").on(table.authSubject),
   }),
 );
 

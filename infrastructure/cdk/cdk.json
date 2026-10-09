@@ -1,6 +1,0 @@
-{
-  "app": "tsx bin/app.ts",
-  "context": {
-    "@aws-cdk/core:newStyleStackSynthesis": true
-  }
-}

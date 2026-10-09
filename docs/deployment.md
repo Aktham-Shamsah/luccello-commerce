@@ -1,18 +1,35 @@
-# Deployment
+# Ubuntu Server Deployment
 
-Initial phase is local only. Do not deploy AWS until the exact command `DEPLOY TO AWS` is given.
+The deployment target is a locally operated Ubuntu server using Docker Compose. There are no cloud infrastructure stacks in this project.
 
-Before deployment:
+## Prepare
 
-1. Verify clean Git working tree.
-2. Run `pnpm verify`.
-3. Record Git SHA.
-4. Confirm no secrets are committed.
-5. Confirm AWS CLI account and region.
-6. Run `pnpm cdk:synth`.
-7. Run `cdk diff` and review changes.
-8. Deploy CDK stacks using GitHub OIDC or an explicitly authenticated local AWS profile.
-9. Run migrations through a private-network migrator.
-10. Smoke test storefront, admin, API, WAF, headers, and `/version`.
+1. Confirm a trusted LAN host with Docker Engine and Docker Compose v2.
+2. Copy `.env.docker.example` to `.env` and replace the independent secret values.
+3. Ensure only the intended network can reach storefront port 3000 and admin port 3001.
+4. Ensure PostgreSQL and the API are not published outside their Docker network.
+5. Back up the database and uploaded-image volume before migrations or upgrades.
 
-GitHub Actions must use OIDC federation. Do not store long-lived AWS keys in repository secrets unless a documented exception is accepted.
+## Start
+
+```bash
+docker compose up -d --build
+docker compose ps
+docker compose logs --tail=100 migrate api storefront admin
+```
+
+The `migrate` container applies database migrations before the API starts; the seed only adds demonstration products to an empty catalog.
+
+Check the storefront at `http://SERVER_LAN_IP:3000/ar` and admin login at `http://SERVER_LAN_IP:3001/login`.
+
+## Acceptance checks
+
+- Admin login rejects unauthenticated requests and permits authenticated product edits.
+- Storefront lists the published database products.
+- Cash-on-delivery checkout writes the expected order/items and decrements inventory.
+- Canceling an order restores stock; fulfilling an order does not.
+- Review submission waits for approval before becoming public.
+- Product images survive container restarts and database backups are recoverable.
+- No private secrets are exposed in logs, browser bundles or committed files.
+
+Do not open the admin to an untrusted network without HTTPS and a stronger identity/access-control model. See [Ubuntu guide](ubuntu-docker.md) and [backup and recovery](backup-recovery.md).

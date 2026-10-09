@@ -2,7 +2,7 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const root = process.cwd();
-const ignored = new Set(["node_modules", ".git", ".next", "dist", "cdk.out"]);
+const ignored = new Set(["node_modules", ".git", ".next", "dist"]);
 const patterns = [
   /AKIA[0-9A-Z]{16}/,
   /-----BEGIN (RSA|EC|OPENSSH|PRIVATE) KEY-----/,

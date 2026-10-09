@@ -2,7 +2,7 @@
   "name": "luccello-commerce",
   "version": "0.1.0-local-ready",
   "private": true,
-  "description": "AWS-ready Arabic RTL ecommerce platform inspired by a public storefront reference, built with original assets and fictional data.",
+  "description": "Locally hosted Arabic RTL ecommerce platform powered by Docker and PostgreSQL.",
   "license": "MIT",
   "packageManager": "pnpm@9.15.4",
   "engines": {
@@ -31,9 +31,8 @@
     "db:generate": "pnpm --filter @luccello/api drizzle-kit generate",
     "db:migrate": "pnpm --filter @luccello/api drizzle-kit migrate",
     "db:seed": "tsx database/seeds/seed.ts",
-    "cdk:synth": "pnpm --filter @luccello/cdk synth",
     "security:scan": "pnpm audit --audit-level moderate && node scripts/secret-scan.mjs",
-    "verify": "pnpm format && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm cdk:synth && pnpm security:scan"
+    "verify": "pnpm format && pnpm lint && pnpm typecheck && pnpm test && pnpm build && pnpm security:scan"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",

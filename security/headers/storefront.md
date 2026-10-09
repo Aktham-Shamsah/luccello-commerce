@@ -5,4 +5,4 @@
 - `Referrer-Policy: strict-origin-when-cross-origin`
 - `Permissions-Policy: camera=(), microphone=(), geolocation=()`
 
-Production CloudFront should add a strict CSP after payment and analytics domains are finalized.
+For untrusted networks, terminate HTTPS at a locally managed reverse proxy. Add and test a restrictive Content-Security-Policy after external script/image/payment domains are finalized.

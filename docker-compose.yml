@@ -1,3 +1,5 @@
+# Development-only PostgreSQL for running Node.js apps on the host.
+# For the complete Ubuntu deployment use compose.yaml instead.
 services:
   postgres:
     image: postgres:16-alpine
@@ -6,20 +8,13 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_dev_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d luccello"]
       interval: 5s
       timeout: 5s
       retries: 10
-
-  dynamodb:
-    image: amazon/dynamodb-local:2.5.4
-    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
-    ports:
-      - "8000:8000"
-
 volumes:
-  postgres_data:
+  postgres_dev_data:

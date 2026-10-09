@@ -49,4 +49,4 @@ Observed on 2026-09-22 from `https://luccello-bag.com/`.
 ## Gaps To Recheck
 
 - Salla-specific animation timing and carousel controls should be compared again after local screenshots.
-- Real payment, shipping, and Cognito credentials are intentionally disabled until configured.
+- Online payment and shipping-carrier integrations are disabled until configured; local admin access uses its own password-protected session.

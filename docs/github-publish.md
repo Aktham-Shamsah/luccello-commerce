@@ -20,4 +20,4 @@ Publish from the repository root:
 .\scripts\publish-github.ps1 -RepositoryUrl "https://github.com/Aktham-Shamsah/luccello-commerce.git"
 ```
 
-If GitHub prompts for authentication, use a GitHub account or token with push access to the destination repository. AWS deployment remains intentionally out of scope until the explicit command `DEPLOY TO AWS` is given.
+If GitHub prompts for authentication, use a GitHub account or token with push access to the destination repository. The full store runs on a local Ubuntu server using Docker Compose; GitHub Pages is only a static preview.

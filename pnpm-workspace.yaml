@@ -3,7 +3,6 @@ packages:
   - "services/*"
   - "packages/*"
   - "database"
-  - "infrastructure/cdk"
 onlyBuiltDependencies:
   - esbuild
   - sharp
