@@ -14,6 +14,7 @@ const links = [
   ["#advertising-metrics", "مؤشرات الإعلانات"],
   ["#user-activity", "نشاط المستخدمين"],
   ["#orders", "المشتريات"],
+  ["#reviews", "تقييمات المنتجات"],
   ["#users", "المستخدمون"],
 ] as const;
 

@@ -27,6 +27,14 @@ const nextConfig: NextConfig = {
         async headers() {
           return [{ source: "/(.*)", headers: securityHeaders }];
         },
+        async rewrites() {
+          return [
+            {
+              source: "/backend/:path*",
+              destination: `${process.env.BACKEND_URL ?? "http://localhost:4000"}/:path*`,
+            },
+          ];
+        },
       }),
 };
 

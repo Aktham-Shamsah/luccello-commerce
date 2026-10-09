@@ -39,25 +39,23 @@ function loadCatalog(): Promise<CatalogData> {
     fetch(`${apiUrl}/categories`).then((response) => (response.ok ? response.json() : [])),
     fetch(`${apiUrl}/products`).then((response) => (response.ok ? response.json() : [])),
   ]).then(([categoryRows, productRows]: [ApiCategory[], Product[]]) => ({
-    categories: categoryRows.length
-      ? categoryRows.map((category) => ({
-          id: category.id,
-          slug: category.slug,
-          nameAr: category.nameAr,
-          nameEn: category.nameEn ?? "",
-          descriptionAr: category.descriptionAr ?? "",
-          image: category.imageUrl?.trim() || publicPath("/product-collage.png"),
-        }))
-      : fallbackCategories,
-    products: productRows.length ? productRows : fallbackProducts,
+    categories: categoryRows.map((category) => ({
+      id: category.id,
+      slug: category.slug,
+      nameAr: category.nameAr,
+      nameEn: category.nameEn ?? "",
+      descriptionAr: category.descriptionAr ?? "",
+      image: category.imageUrl?.trim() || publicPath("/product-collage.png"),
+    })),
+    products: productRows,
   }));
   return catalogPromise;
 }
 
 export function useCatalogData() {
   const [data, setData] = useState<CatalogData>({
-    categories: fallbackCategories,
-    products: fallbackProducts,
+    categories: configuredApiUrl ? [] : fallbackCategories,
+    products: configuredApiUrl ? [] : fallbackProducts,
   });
   const [ready, setReady] = useState(false);
 

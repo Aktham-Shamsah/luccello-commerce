@@ -4,6 +4,14 @@ import path from "node:path";
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   outputFileTracingRoot: path.join(process.cwd(), "../.."),
+  async rewrites() {
+    return [
+      {
+        source: "/backend/:path*",
+        destination: `${process.env.API_DOMAIN ?? "http://localhost:4000"}/:path*`,
+      },
+    ];
+  },
   async headers() {
     return [
       {

@@ -66,7 +66,7 @@ export async function ensureSession(req: Request, res: Response) {
 
   res.cookie(COOKIE_NAME, nextToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.COOKIE_SECURE === "true",
     sameSite: "lax",
     path: "/",
     maxAge: SESSION_TTL_MS,

@@ -1,5 +1,10 @@
 import { z } from "zod";
 
+const uploadImageUrl = z
+  .union([z.string().url(), z.string().startsWith("/backend/uploads/"), z.literal("")])
+  .optional()
+  .nullable();
+
 export const productAdminSchema = z.object({
   slug: z.string().min(1).max(140),
   sku: z.string().min(1).max(80),
@@ -17,7 +22,7 @@ export const productAdminSchema = z.object({
   featured: z.boolean().default(false),
   newest: z.boolean().default(false),
   sale: z.boolean().default(false),
-  imageUrl: z.string().url().optional().nullable().or(z.literal("")),
+  imageUrl: uploadImageUrl,
   categoryIds: z.array(z.string().uuid()).default([]),
   inventoryQuantity: z.number().int().nonnegative().default(0),
   lowStockThreshold: z.number().int().nonnegative().default(3),
@@ -30,14 +35,14 @@ export const categoryAdminSchema = z.object({
   nameAr: z.string().min(1),
   nameEn: z.string().optional().nullable(),
   descriptionAr: z.string().optional().nullable(),
-  imageUrl: z.string().url().optional().nullable().or(z.literal("")),
+  imageUrl: uploadImageUrl,
 });
 
 export const categoryAdminPatchSchema = categoryAdminSchema.partial();
 
 export const bannerAdminSchema = z.object({
   title: z.string().min(1),
-  imageUrl: z.string().url().optional().nullable().or(z.literal("")),
+  imageUrl: uploadImageUrl,
   href: z.string().optional().nullable(),
   enabled: z.boolean().default(true),
 });

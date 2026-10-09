@@ -267,7 +267,8 @@ export async function getAdminDashboard() {
       .where(sql`${inventory.quantity} <= ${inventory.lowStockThreshold}`),
     db()
       .select({ total: sql<string>`coalesce(sum(${orders.total}), 0)` })
-      .from(orders),
+      .from(orders)
+      .where(eq(orders.status, "fulfilled")),
   ]);
 
   return {

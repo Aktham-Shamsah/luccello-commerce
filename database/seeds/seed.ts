@@ -31,6 +31,11 @@ const productSeed = [
 ];
 
 async function seed() {
+  const existingProducts = await db.select({ id: products.id }).from(products).limit(1);
+  if (existingProducts.length > 0) {
+    console.log("Database already contains products; skipping demo seed.");
+    return;
+  }
   const categoryIds = new Map<string, string>();
   for (const category of categorySeed) {
     const [row] = await db

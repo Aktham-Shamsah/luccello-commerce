@@ -55,7 +55,7 @@ const baseProduct = {
   lowStockThreshold: 4,
   published: true,
   notes: "تصل داخل كيس حفظ قطني.",
-  attachments: [{ label: "دليل العناية", url: publicPath("/care-guide.pdf") }],
+  attachments: [],
   seoTitle: "حقيبة نسائية أنيقة",
   seoDescription: "حقيبة نسائية أصلية بتصميم عملي وخامة فاخرة.",
 } satisfies Omit<
@@ -100,12 +100,6 @@ export const products: Product[] = Array.from({ length: 16 }, (_, index) => {
     relatedProductIds: [`prod-${65 - index}`, `prod-${64 - index}`].filter(Boolean),
   };
 });
-
-export const testimonials = [
-  { name: "عميلة من الرياض", body: "التغليف مرتب والخامة أجمل من المتوقع. وصلت بسرعة.", rating: 5 },
-  { name: "عميلة من جدة", body: "الحقيبة خفيفة وتنفع للدوام، اللون مطابق للصور.", rating: 5 },
-  { name: "عميلة من الدمام", body: "أعجبني وضوح المقاسات وخدمة الواتساب.", rating: 4 },
-];
 
 export function getProductBySlug(slug: string) {
   return products.find((product) => product.slug === slug);

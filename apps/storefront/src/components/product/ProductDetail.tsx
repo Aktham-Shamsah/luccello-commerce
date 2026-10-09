@@ -10,13 +10,21 @@ import { useCatalogData } from "@/lib/catalog-client";
 import { ProductCard } from "@/components/catalog/ProductCard";
 import { addToCart } from "@/lib/cart-client";
 import { SafeImage } from "@/components/common/SafeImage";
+import { ProductReviews } from "@/components/product/ProductReviews";
 
 export function ProductDetail({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(0);
   const { products } = useCatalogData();
   const state = stockState(product);
   const related = useMemo(
-    () => products.filter((item) => item.id !== product.id).slice(0, 4),
+    () =>
+      products
+        .filter(
+          (item) =>
+            item.id !== product.id && item.categories.some((c) => product.categories.includes(c)),
+        )
+        .slice(0, 4),
     [product.id, products],
   );
 
@@ -24,20 +32,26 @@ export function ProductDetail({ product }: { product: Product }) {
     <>
       <section className="container product-detail">
         <div className="gallery">
-          <SafeImage src={product.images[0]} alt={product.nameAr} />
-          <div className="thumbs">
-            <SafeImage src={product.images[0]} alt="" />
-            <SafeImage src={product.images[1]} alt="" />
-          </div>
+          <SafeImage src={product.images[selectedImage]} alt={product.nameAr} />
+          {product.images.length > 1 ? (
+            <div className="thumbs">
+              {product.images.map((image, index) => (
+                <button
+                  type="button"
+                  key={image}
+                  onClick={() => setSelectedImage(index)}
+                  aria-label={`الصورة ${index + 1}`}
+                  aria-pressed={selectedImage === index}
+                >
+                  <SafeImage src={image} alt="" />
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
         <div className="product-info">
           <span className="sku">{product.sku}</span>
           <h1>{product.nameAr}</h1>
-          <div className="product-review-summary" aria-label="تقييم 4.9 من 5">
-            <span>★★★★★</span>
-            <strong>4.9</strong>
-            <small>27 مراجعة</small>
-          </div>
           <p className="muted">{product.shortDescriptionAr}</p>
           <div className="product-price">
             <strong>{formatSar(product.salePrice)}</strong>
@@ -51,8 +65,6 @@ export function ProductDetail({ product }: { product: Product }) {
             اللون
             <select className="field" defaultValue={product.color}>
               <option>{product.color}</option>
-              <option>عاجي</option>
-              <option>أسود</option>
             </select>
           </label>
           <div className="quantity" aria-label="الكمية">
@@ -100,33 +112,7 @@ export function ProductDetail({ product }: { product: Product }) {
             <dd>{product.inventoryQuantity}</dd>
           </dl>
         </div>
-        <div className="reviews-panel">
-          <h2>تقييمات المنتج</h2>
-          <div className="review-card">
-            <div>
-              <span>★★★★★</span>
-              <strong>مراجعة تجريبية</strong>
-            </div>
-            <p>الخامة جميلة والحجم عملي، والتغليف وصل مرتب جداً. اللون مطابق للصور.</p>
-            <small>بيانات العرض · 5/5</small>
-          </div>
-          <div className="review-card">
-            <div>
-              <span>★★★★★</span>
-              <strong>مراجعة تجريبية</strong>
-            </div>
-            <p>استخدمتها للدوام وأعجبني تقسيمها الداخلي وخفة وزنها وسهولة حملها.</p>
-            <small>بيانات العرض · 5/5</small>
-          </div>
-          <div className="review-card">
-            <div>
-              <span>★★★★☆</span>
-              <strong>مراجعة تجريبية</strong>
-            </div>
-            <p>المقاس واضح والسعر ظاهر قبل الإضافة للسلة، والتجربة سهلة جداً على الجوال.</p>
-            <small>بيانات العرض · 4/5</small>
-          </div>
-        </div>
+        <ProductReviews productId={product.id} />
       </section>
       <section className="container section">
         <div className="section-title">

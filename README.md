@@ -13,12 +13,26 @@ Next.js 15, React, TypeScript, pnpm, Turborepo, Zod, Drizzle ORM, PostgreSQL, AW
 - API: `services/api`
 - CDK: `infrastructure/cdk`
 
+## Ubuntu Docker deployment
+
+For a local Ubuntu server, use [docs/ubuntu-docker.md](docs/ubuntu-docker.md):
+
+```bash
+cp .env.docker.example .env
+# Replace all CHANGE_ME secrets in .env
+docker compose up -d --build
+```
+
+Storefront: port 3000. Password-protected admin: port 3001. The API and database are private to the Docker network. Orders use PostgreSQL-backed cash-on-delivery checkout, stock adjustments, order tracking, and admin fulfillment. Online payments, carrier integrations, and WhatsApp are not enabled.
+
+This remains a development implementation; the commercial policies, actual product media, real shipping conditions, customer accounts, and HTTPS must be configured and verified before public launch.
+
 ## Local Setup
 
 ```bash
 corepack enable
 pnpm install
-docker compose up -d
+docker compose -f docker-compose.yml up -d # development-only database services
 pnpm dev:api
 pnpm dev:storefront
 pnpm dev:admin

@@ -4,7 +4,9 @@ import helmet from "helmet";
 import { checkoutSchema, productSlugSchema } from "@luccello/contracts";
 import { loadConfig, rateLimits } from "@luccello/config";
 import { logger } from "@luccello/logging";
-import { checkout } from "./modules/checkout/checkout.service.js";
+import { checkout, CheckoutError } from "./modules/checkout/checkout.service.js";
+import { publicOrderRouter } from "./modules/orders/public-order.router.js";
+import { reviewRouter } from "./modules/reviews/review.router.js";
 import { inventorySnapshot } from "./modules/inventory/inventory.service.js";
 import { productService } from "./modules/products/product.service.js";
 import {
@@ -50,9 +52,17 @@ app.get("/version", (_req, res) => {
 app.get("/products", rateLimit(rateLimits.catalogRead), async (_req, res) => {
   try {
     const databaseProducts = await listPublishedDatabaseProducts();
-    res.json(databaseProducts.length ? databaseProducts : productService.listPublished());
+    res.json(
+      process.env.NODE_ENV === "production"
+        ? databaseProducts
+        : databaseProducts.length
+          ? databaseProducts
+          : productService.listPublished(),
+    );
   } catch {
-    res.json(productService.listPublished());
+    if (process.env.NODE_ENV === "production")
+      res.status(503).json({ error: "catalog_unavailable" });
+    else res.json(productService.listPublished());
   }
 });
 
@@ -65,8 +75,15 @@ app.get("/products/:slug", rateLimit(rateLimits.catalogRead), async (req, res) =
 
   try {
     const databaseProduct = await findPublishedDatabaseProductBySlug(parsedSlug.data);
-    res.json(databaseProduct ?? productService.getBySlug(parsedSlug.data));
+    if (databaseProduct) res.json(databaseProduct);
+    else if (process.env.NODE_ENV === "production")
+      res.status(404).json({ error: "product_not_found" });
+    else res.json(productService.getBySlug(parsedSlug.data));
   } catch {
+    if (process.env.NODE_ENV === "production") {
+      res.status(503).json({ error: "catalog_unavailable" });
+      return;
+    }
     try {
       res.json(productService.getBySlug(parsedSlug.data));
     } catch {
@@ -96,6 +113,8 @@ app.get("/inventory", rateLimit(rateLimits.catalogRead), (_req, res) => {
 });
 
 app.use("/analytics", rateLimit(rateLimits.catalogRead), analyticsRouter);
+app.use("/orders", rateLimit(rateLimits.checkout), publicOrderRouter);
+app.use("/reviews", rateLimit(rateLimits.catalogRead), reviewRouter);
 
 app.post(
   "/checkout",
@@ -110,7 +129,12 @@ app.post(
         requestId: res.locals.requestId,
         reason: error instanceof Error ? error.message : "unknown",
       });
-      res.status(409).json({ error: "checkout_failed", requestId: res.locals.requestId });
+      res
+        .status(error instanceof CheckoutError ? 409 : 500)
+        .json({
+          error: error instanceof CheckoutError ? error.code : "checkout_failed",
+          requestId: res.locals.requestId,
+        });
     }
   },
 );

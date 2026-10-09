@@ -1,4 +1,8 @@
 import { Router, type Request, type Response } from "express";
+import { desc, eq } from "drizzle-orm";
+import { auditLogs, productReviews } from "@luccello/database";
+import { getDatabase } from "../../shared/database/client.js";
+import { changeOrderStatus } from "../orders/manage-order.service.js";
 import { z } from "zod";
 import {
   bannerAdminPatchSchema,
@@ -57,6 +61,73 @@ function parseId(raw: string | string[] | undefined, res: Response) {
 }
 
 export const adminRouter = Router();
+
+adminRouter.use((req, res, next) => {
+  if (["POST", "PATCH", "DELETE"].includes(req.method)) {
+    res.on("finish", () => {
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        void getDatabase()
+          .insert(auditLogs)
+          .values({
+            action: `admin_${req.method.toLowerCase()}`,
+            target: req.originalUrl,
+            metadata: { status: res.statusCode, requestId: res.locals.requestId },
+          })
+          .catch(() => undefined);
+      }
+    });
+  }
+  next();
+});
+
+adminRouter.get(
+  "/reviews",
+  route(async (_req, res) => {
+    res.json(
+      await getDatabase()
+        .select()
+        .from(productReviews)
+        .orderBy(desc(productReviews.createdAt))
+        .limit(200),
+    );
+  }),
+);
+
+adminRouter.patch(
+  "/reviews/:id",
+  route(async (req, res) => {
+    const id = parseId(req.params.id, res);
+    if (!id) return;
+    const parsed = z.object({ status: z.enum(["approved", "rejected"]) }).safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "invalid_status" });
+      return;
+    }
+    await getDatabase()
+      .update(productReviews)
+      .set({ status: parsed.data.status, updatedAt: new Date() })
+      .where(eq(productReviews.id, id));
+    res.status(204).end();
+  }),
+);
+
+adminRouter.patch(
+  "/orders/:id/status",
+  route(async (req, res) => {
+    const id = parseId(req.params.id, res);
+    if (!id) return;
+    const parsed = z.object({ status: z.enum(["cancelled", "fulfilled"]) }).safeParse(req.body);
+    if (!parsed.success) {
+      res.status(400).json({ error: "invalid_status" });
+      return;
+    }
+    try {
+      res.json(await changeOrderStatus(id, parsed.data.status));
+    } catch (e) {
+      res.status(409).json({ error: e instanceof Error ? e.message : "update_failed" });
+    }
+  }),
+);
 
 adminRouter.post(
   "/upload",

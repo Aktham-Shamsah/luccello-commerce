@@ -41,6 +41,16 @@ export function addToCart(productId: string, quantity = 1) {
   void recordActivity("cart_add", window.location.pathname, productId);
 }
 
+export function setCartQuantity(productId: string, quantity: number) {
+  saveCart(
+    readCart().map((item) =>
+      item.productId === productId
+        ? { ...item, quantity: Math.min(20, Math.max(1, quantity)) }
+        : item,
+    ),
+  );
+}
+
 export function removeFromCart(productId: string) {
   saveCart(readCart().filter((item) => item.productId !== productId));
   void recordActivity("cart_remove", window.location.pathname, productId);

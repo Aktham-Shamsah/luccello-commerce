@@ -1,0 +1,98 @@
+name: luccello
+x-app: &app
+  image: luccello-local:latest
+  build:
+    context: .
+    dockerfile: Dockerfile
+  restart: unless-stopped
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: luccello
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d luccello"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  migrate:
+    <<: *app
+    restart: "no"
+    command:
+      [
+        "sh",
+        "-c",
+        "corepack pnpm --filter @luccello/api exec drizzle-kit migrate && corepack pnpm db:seed",
+      ]
+    environment:
+      DATABASE_URL: postgres://postgres:${DB_PASSWORD:?Set DB_PASSWORD in .env}@postgres:5432/luccello
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    <<: *app
+    command: ["corepack", "pnpm", "--filter", "@luccello/api", "start"]
+    environment:
+      NODE_ENV: production
+      APP_ENV: local
+      DATABASE_URL: postgres://postgres:${DB_PASSWORD:?Set DB_PASSWORD in .env}@postgres:5432/luccello
+      ADMIN_LOCAL_KEY: ${ADMIN_LOCAL_KEY:?Set ADMIN_LOCAL_KEY in .env}
+      SESSION_HASH_SALT: ${SESSION_HASH_SALT:?Set SESSION_HASH_SALT in .env}
+      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:3001
+      API_DOMAIN: http://api:4000
+      MOCK_PAYMENTS_ENABLED: "false"
+    volumes:
+      - uploaded_images:/app/services/api/uploads
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4000/version').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+
+  storefront:
+    <<: *app
+    command: ["corepack", "pnpm", "--filter", "@luccello/storefront", "start"]
+    environment:
+      NODE_ENV: production
+      BACKEND_URL: http://api:4000
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+
+  admin:
+    <<: *app
+    command: ["corepack", "pnpm", "--filter", "@luccello/admin", "start"]
+    environment:
+      NODE_ENV: production
+      API_DOMAIN: http://api:4000
+      ADMIN_LOCAL_KEY: ${ADMIN_LOCAL_KEY:?Set ADMIN_LOCAL_KEY in .env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Set ADMIN_PASSWORD in .env}
+      ADMIN_SESSION_SECRET: ${ADMIN_SESSION_SECRET:?Set ADMIN_SESSION_SECRET in .env}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    ports:
+      - "3001:3001"
+    depends_on:
+      api:
+        condition: service_healthy
+volumes:
+  postgres_data:
+  uploaded_images:

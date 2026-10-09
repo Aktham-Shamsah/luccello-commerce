@@ -226,6 +226,15 @@ export const orders = pgTable("orders", {
   shippingTotal: numeric("shipping_total", { precision: 12, scale: 2 }).notNull(),
   total: numeric("total", { precision: 12, scale: 2 }).notNull(),
   currency: varchar("currency", { length: 3 }).notNull(),
+  idempotencyKey: text("idempotency_key").unique(),
+  contactName: text("contact_name"),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  addressLine1: text("address_line1"),
+  addressCity: text("address_city"),
+  addressCountry: varchar("address_country", { length: 2 }),
+  shippingService: text("shipping_service"),
+  paymentMethod: text("payment_method"),
   ...timestamps,
 });
 

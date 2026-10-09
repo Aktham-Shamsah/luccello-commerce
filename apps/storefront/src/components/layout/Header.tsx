@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, Search, ShoppingCart, UserRound, X } from "lucide-react";
+import { Heart, Menu, Search, ShoppingCart, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useCatalogData } from "@/lib/catalog-client";
 import { categoryHref } from "@/lib/catalog-links";
@@ -63,6 +63,9 @@ export function Header() {
         <div className="header-actions">
           <Link className="icon-btn" href="/ar/search" aria-label="البحث">
             <Search size={22} />
+          </Link>
+          <Link className="icon-btn" href="/ar/wishlist" aria-label="المفضلة">
+            <Heart size={22} />
           </Link>
           <Link className="icon-btn" href="/ar/account" aria-label="الحساب">
             <UserRound size={22} />

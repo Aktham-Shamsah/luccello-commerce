@@ -7,7 +7,13 @@ import { formatSar } from "@luccello/ui";
 import { useCatalogData } from "@/lib/catalog-client";
 import { productHref } from "@/lib/catalog-links";
 import { computeTotals } from "@/lib/pricing";
-import { CART_EVENT, readCart, removeFromCart, type StoredCartItem } from "@/lib/cart-client";
+import {
+  CART_EVENT,
+  readCart,
+  removeFromCart,
+  setCartQuantity,
+  type StoredCartItem,
+} from "@/lib/cart-client";
 import { SafeImage } from "@/components/common/SafeImage";
 
 export function CartClient() {
@@ -73,7 +79,28 @@ export function CartClient() {
                 <Link href={productHref(product.slug)}>
                   <h2>{product.nameAr}</h2>
                 </Link>
-                <p>الكمية: {quantity}</p>
+                <div className="quantity" aria-label="تعديل الكمية">
+                  <button
+                    type="button"
+                    aria-label={`تقليل كمية ${product.nameAr}`}
+                    onClick={() =>
+                      quantity <= 1
+                        ? removeFromCart(product.id)
+                        : setCartQuantity(product.id, quantity - 1)
+                    }
+                  >
+                    −
+                  </button>
+                  <span>{quantity}</span>
+                  <button
+                    type="button"
+                    aria-label={`زيادة كمية ${product.nameAr}`}
+                    disabled={quantity >= Math.min(20, product.inventoryQuantity)}
+                    onClick={() => setCartQuantity(product.id, quantity + 1)}
+                  >
+                    +
+                  </button>
+                </div>
                 <div className="cart-line-price">
                   <strong>{formatSar(product.salePrice * quantity)}</strong>
                   {product.sale ? <del>{formatSar(product.regularPrice * quantity)}</del> : null}

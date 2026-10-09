@@ -57,6 +57,18 @@ type OrderRow = {
   total: number;
   currency: string;
   createdAt: string;
+  contactName?: string | null;
+  contactEmail?: string | null;
+  contactPhone?: string | null;
+};
+type ReviewRow = {
+  id: string;
+  productId: string;
+  title: string;
+  body: string;
+  rating: number;
+  status: string;
+  createdAt: string;
 };
 
 type UserRow = {
@@ -122,7 +134,11 @@ const emptyProduct: ProductForm = {
 async function adminFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`/api/admin/${path}`, {
     ...init,
-    headers: { "content-type": "application/json", ...(init?.headers ?? {}) },
+    headers: {
+      "content-type": "application/json",
+      "x-requested-with": "luccello-admin",
+      ...(init?.headers ?? {}),
+    },
   });
   if (!response.ok) {
     const body = (await response.json().catch(() => ({}))) as { error?: string };
@@ -154,6 +170,7 @@ export function AdminDashboard() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [banners, setBanners] = useState<Banner[]>([]);
   const [orders, setOrders] = useState<OrderRow[]>([]);
+  const [reviews, setReviews] = useState<ReviewRow[]>([]);
   const [users, setUsers] = useState<UserRow[]>([]);
   const [analytics, setAnalytics] = useState<AdminAnalytics | null>(null);
   const [productForm, setProductForm] = useState<ProductForm>(emptyProduct);
@@ -177,6 +194,7 @@ export function AdminDashboard() {
         categoryData,
         bannerData,
         orderData,
+        reviewData,
         userData,
         analyticsData,
       ] = await Promise.all([
@@ -185,6 +203,7 @@ export function AdminDashboard() {
         adminFetch<Category[]>("categories"),
         adminFetch<Banner[]>("banners"),
         adminFetch<OrderRow[]>("orders"),
+        adminFetch<ReviewRow[]>("reviews"),
         adminFetch<UserRow[]>("users"),
         adminFetch<AdminAnalytics>("analytics"),
       ]);
@@ -193,6 +212,7 @@ export function AdminDashboard() {
       setCategories(categoryData);
       setBanners(bannerData);
       setOrders(orderData);
+      setReviews(reviewData);
       setUsers(userData);
       setAnalytics(analyticsData);
     } catch (loadError) {
@@ -203,6 +223,31 @@ export function AdminDashboard() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  async function updateOrder(id: string, status: "cancelled" | "fulfilled") {
+    if (
+      !window.confirm(status === "cancelled" ? "إلغاء الطلب وإرجاع المخزون؟" : "تأكيد تسليم الطلب؟")
+    )
+      return;
+    try {
+      await adminFetch(`orders/${id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+      });
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "تعذر تغيير الحالة");
+    }
+  }
+
+  async function moderateReview(id: string, status: "approved" | "rejected") {
+    try {
+      await adminFetch(`reviews/${id}`, { method: "PATCH", body: JSON.stringify({ status }) });
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "تعذر مراجعة التقييم");
+    }
+  }
 
   async function handleImageUpload(
     event: ChangeEvent<HTMLInputElement>,
@@ -347,9 +392,22 @@ export function AdminDashboard() {
           <h2>لوحة إدارة LU&apos;CHÉLO</h2>
           <p>إدارة المنتجات والمخزون والفئات والطلبات والعملاء والبانر من قاعدة البيانات.</p>
         </div>
-        <button className="admin-btn secondary" type="button" onClick={() => void load()}>
-          تحديث البيانات
-        </button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button className="admin-btn secondary" type="button" onClick={() => void load()}>
+            تحديث البيانات
+          </button>
+          <button
+            className="admin-btn secondary"
+            type="button"
+            onClick={() => {
+              void fetch("/api/auth/logout", { method: "POST" }).then(() =>
+                window.location.assign("/login"),
+              );
+            }}
+          >
+            تسجيل الخروج
+          </button>
+        </div>
       </div>
 
       {error ? <div className="admin-error">{error}</div> : null}
@@ -840,8 +898,10 @@ export function AdminDashboard() {
             <tr>
               <th>الطلب</th>
               <th>الحالة</th>
+              <th>العميل / الهاتف</th>
               <th>الإجمالي</th>
               <th>التاريخ</th>
+              <th>الإجراءات</th>
             </tr>
           </thead>
           <tbody>
@@ -849,8 +909,85 @@ export function AdminDashboard() {
               <tr key={order.id}>
                 <td>{order.id.slice(0, 8)}</td>
                 <td>{order.status}</td>
+                <td>
+                  {order.contactName ?? "—"}
+                  <div>{order.contactPhone ?? "—"}</div>
+                </td>
                 <td>{order.total.toLocaleString("ar")} شيكل</td>
                 <td>{new Date(order.createdAt).toLocaleDateString("ar")}</td>
+                <td>
+                  {order.status === "confirmed" ? (
+                    <>
+                      <button
+                        className="admin-btn"
+                        type="button"
+                        onClick={() => void updateOrder(order.id, "fulfilled")}
+                      >
+                        تم التسليم
+                      </button>
+                      <button
+                        className="admin-btn secondary"
+                        type="button"
+                        onClick={() => void updateOrder(order.id, "cancelled")}
+                      >
+                        إلغاء
+                      </button>
+                    </>
+                  ) : (
+                    "—"
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </section>
+
+      <section className="table-wrap" id="reviews">
+        <div className="section-heading">
+          <div>
+            <h3>مراجعة تقييمات المنتجات</h3>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>التقييم</th>
+              <th>النص</th>
+              <th>الحالة</th>
+              <th>الإجراء</th>
+            </tr>
+          </thead>
+          <tbody>
+            {reviews.map((review) => (
+              <tr key={review.id}>
+                <td>
+                  {review.rating} / 5 — {review.title}
+                </td>
+                <td>{review.body}</td>
+                <td>{review.status}</td>
+                <td>
+                  {review.status === "pending" ? (
+                    <>
+                      <button
+                        className="admin-btn"
+                        onClick={() => void moderateReview(review.id, "approved")}
+                        type="button"
+                      >
+                        اعتماد
+                      </button>
+                      <button
+                        className="admin-btn secondary"
+                        onClick={() => void moderateReview(review.id, "rejected")}
+                        type="button"
+                      >
+                        رفض
+                      </button>
+                    </>
+                  ) : (
+                    "—"
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

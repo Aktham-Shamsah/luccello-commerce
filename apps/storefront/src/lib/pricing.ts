@@ -10,9 +10,13 @@ export function discountPercent(product: Product): number {
   return Math.round(((product.regularPrice - product.salePrice) / product.regularPrice) * 100);
 }
 
-export function computeTotals(items: CartItem[], couponCode?: string) {
+export function computeTotals(
+  items: CartItem[],
+  couponCode?: string,
+  shippingMethod: "standard" | "express" = "standard",
+) {
   const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
-  const discount = couponCode === "L10" ? Math.round(subtotal * 0.1) : 0;
-  const shipping = subtotal >= 196 ? 0 : 30;
+  const discount = couponCode?.trim().toUpperCase() === "L10" ? Math.round(subtotal * 10) / 100 : 0;
+  const shipping = shippingMethod === "express" ? 45 : subtotal >= 196 ? 0 : 30;
   return { subtotal, discount, shipping, total: subtotal - discount + shipping };
 }

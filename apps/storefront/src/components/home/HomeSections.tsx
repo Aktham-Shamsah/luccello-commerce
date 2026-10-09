@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { testimonials } from "@/lib/catalog";
 import { useCatalogData } from "@/lib/catalog-client";
 import { categoryHref } from "@/lib/catalog-links";
 import { ProductCard } from "@/components/catalog/ProductCard";
@@ -114,15 +113,7 @@ export function TestimonialCarousel() {
           عرض الكل
         </Link>
       </div>
-      <div className="testimonial-grid">
-        {testimonials.map((testimonial) => (
-          <figure key={testimonial.name}>
-            <div aria-label={`${testimonial.rating} نجوم`}>★★★★★</div>
-            <blockquote>{testimonial.body}</blockquote>
-            <figcaption>{testimonial.name}</figcaption>
-          </figure>
-        ))}
-      </div>
+      <p>ستظهر هنا تجارب العملاء بعد وصول تقييمات حقيقية ومعتمدة.</p>
     </section>
   );
 }
@@ -132,17 +123,9 @@ export function NewsletterSection() {
     <section className="newsletter">
       <div className="container newsletter-inner">
         <h2>تابعي وصول القطع الجديدة</h2>
-        <form>
-          <input
-            className="field"
-            type="email"
-            placeholder="البريد الإلكتروني"
-            aria-label="البريد الإلكتروني"
-          />
-          <button className="btn btn-primary" type="submit">
-            اشتراك
-          </button>
-        </form>
+        <Link className="btn btn-primary" href="/ar/latest">
+          تصفحي أحدث المنتجات
+        </Link>
       </div>
     </section>
   );
